@@ -1,9 +1,10 @@
+<!-- ယခင် index.html တစ်ခုလုံးကို အောက်ပါ script ပိုင်းအပါအဝင် အစားထိုးလိုက်ပါ -->
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineMagic | Master Architect Studio</title>
+    <title>CineMagic | Architect Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -19,163 +20,85 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
-        html, body { height: 100dvh; overflow: hidden; transition: background-color 0.2s; }
+        html, body { height: 100dvh; overflow: hidden; background-color: #050505; }
         .main-wrapper { height: 100dvh; display: flex; flex-direction: column; }
-        .dark body { background-color: #050505; color: #e5e5e5; }
-        .light body { background-color: #ffffff; color: #171717; }
+        .dark body { background-color: #050505; color: #E5E5E5; }
+        .light body { background-color: #F9FAFB; color: #111827; }
         .yt-player { aspect-ratio: 16 / 9; @apply bg-black rounded-2xl overflow-hidden relative border border-zinc-200 dark:border-zinc-800 shadow-lg; }
         .custom-scroll::-webkit-scrollbar { width: 3px; }
-        .custom-scroll::-webkit-scrollbar-thumb { @apply bg-zinc-300 dark:bg-zinc-800 rounded-full; }
+        .custom-scroll::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-zinc-800 rounded-full; }
         #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar-open { transform: translateX(0) !important; }
-        .modal-bg { background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); }
         .action-btn { @apply flex items-center gap-2 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="antialiased font-sans">
+<body class="antialiased">
 
-    <!-- Sidebar Overlay -->
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden lg:hidden"></div>
-
-    <!-- Account Settings Modal -->
-    <div id="settingsModal" class="fixed inset-0 z-[200] modal-bg hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-zincDark w-full max-w-lg rounded-[32px] border border-zinc-200 dark:border-zinc-800 p-8 shadow-2xl">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-xl font-bold italic tracking-tighter">Profile Settings</h2>
-                <button onclick="toggleSettings()" class="text-zinc-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-6">
-                <div class="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-100 dark:border-white/5">
-                    <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center font-bold text-white shadow-lg text-lg">A</div>
-                    <div>
-                        <p class="text-sm font-bold">Alex Thorne</p>
-                        <p class="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Master Architect</p>
-                    </div>
-                    <button class="ml-auto text-xs text-accent font-bold">Change</button>
-                </div>
-                <div class="p-5 border border-zinc-100 dark:border-zinc-800 rounded-2xl space-y-4">
-                    <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Account Details</p>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-zinc-500">Email</span>
-                        <span class="font-medium">architect.alex@cinemagic.ai</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                        <span class="text-zinc-500">Subscription</span>
-                        <span class="text-accent font-bold">Free Tier</span>
-                    </div>
-                </div>
-                <button class="w-full py-4 text-xs font-bold text-red-500 border border-red-500/20 rounded-2xl hover:bg-red-500/10 transition">Sign Out Account</button>
-            </div>
-        </div>
-    </div>
 
     <div class="main-wrapper flex flex-row">
         
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-72 bg-white dark:bg-obsidian border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-full -translate-x-full lg:translate-x-0 z-[100] shadow-2xl lg:shadow-none">
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 w-72 bg-white dark:bg-obsidian border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-full -translate-x-full lg:translate-x-0 z-[100]">
             <div class="p-6 flex-1 overflow-y-auto custom-scroll">
-                <button onclick="window.location.reload()" class="w-full py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-[10px] rounded-lg mb-8 uppercase tracking-[0.2em] shadow-md hover:opacity-90 active:scale-95 transition-all">
+                <button onclick="window.location.reload()" class="w-full py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-[10px] rounded-lg mb-8 uppercase tracking-[0.2em] shadow-md">
                     + NEW PROJECT
                 </button>
-                
                 <nav class="space-y-8">
-                    <!-- Library Section -->
                     <div>
-                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 px-2 italic">Library History</p>
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-3 px-3 py-2.5 bg-zinc-50 dark:bg-zincDark border border-zinc-100 dark:border-zinc-800 rounded-lg text-[11px] font-bold cursor-pointer hover:border-accent/30 transition">
-                                <i class="fa-solid fa-bolt text-accent"></i> Renegade Immortal 145
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Usage Quota Section -->
-                    <div class="space-y-4 px-2">
-                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest italic">Usage Monitor</p>
-                        
-                        <!-- Daily Limit -->
-                        <div class="space-y-2">
-                            <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter">
-                                <span class="text-zinc-400">Daily Videos</span>
-                                <span class="text-zinc-600 dark:text-zinc-300">3 / 5 Left</span>
-                            </div>
-                            <div class="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-accent" style="width: 60%;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Token Usage -->
-                        <div class="space-y-2 pt-2">
-                            <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter">
-                                <span class="text-zinc-400">Token Consumption</span>
-                                <span class="text-zinc-600 dark:text-zinc-300">1,240 / 5,000</span>
-                            </div>
-                            <div class="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-zinc-400 dark:bg-zinc-500" style="width: 25%;"></div>
-                            </div>
+                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 px-2 italic underline">Library</p>
+                        <div id="sidebarHistory" class="space-y-1">
+                            <!-- JS will populate this -->
                         </div>
                     </div>
                 </nav>
             </div>
-
-            <!-- Sidebar Footer: Profile Trigger -->
-            <div class="mt-auto p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-transparent">
-                <div onclick="toggleSettings()" class="flex items-center gap-3 cursor-pointer group">
-                    <div class="w-9 h-9 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center font-bold text-white dark:text-zinc-900 shadow-md group-hover:scale-105 transition-transform">A</div>
-                    <div class="flex-1 overflow-hidden">
-                        <p class="text-[10px] font-black uppercase tracking-tighter truncate text-zinc-800 dark:text-zinc-200">Alex Thorne</p>
-                        <p class="text-[8px] font-bold text-accent uppercase tracking-widest">Master Architect</p>
-                    </div>
-                    <i class="fa-solid fa-gear text-[10px] text-zinc-400 group-hover:text-accent transition"></i>
+            <div class="mt-auto p-6 border-t border-zinc-100 dark:border-zinc-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-xs">A</div>
+                    <p class="text-[10px] font-bold uppercase truncate">Alex Thorne</p>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="flex-1 flex flex-col h-full relative overflow-hidden">
-            
-            <!-- Header -->
-            <header class="h-14 flex items-center justify-between px-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0 bg-white/80 dark:bg-obsidian/80 backdrop-blur-md">
+            <header class="h-14 flex items-center justify-between px-6 border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-obsidian/80 backdrop-blur-md">
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden text-zinc-500 p-1"><i class="fa-solid fa-bars-staggered"></i></button>
+                    <button onclick="toggleSidebar()" class="lg:hidden text-slate-500 p-1"><i class="fa-solid fa-bars-staggered"></i></button>
                     <div class="flex items-center gap-2">
-                        <span class="text-xl filter drop-shadow-sm">⚡</span>
+                        <span class="text-xl">⚡</span>
                         <span class="text-xs font-black italic tracking-tighter uppercase">CineMagic <span class="text-zinc-400 dark:text-zinc-500 font-normal">/ AI Studio</span></span>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100 shadow-sm">
-                        <i id="theme-icon" class="fa-solid fa-moon"></i>
-                    </button>
-                </div>
+                <button onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-accent transition shadow-sm">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
             </header>
 
-            <!-- Workspace -->
             <div id="workspace" class="flex-1 overflow-y-auto custom-scroll p-4 md:p-10 flex flex-col items-center">
                 <div class="w-full max-w-5xl">
-                    <!-- Monitor Screen -->
-                    <div class="shadow-2xl rounded-2xl overflow-hidden bg-black ring-1 ring-zinc-200 dark:ring-zinc-800">
-                        <div class="yt-player group">
-                            <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
-                            <video id="videoPlayer" class="hidden w-full h-full" controls></video>
-                            <div id="playBtn" onclick="startVideo()" class="absolute inset-0 flex items-center justify-center cursor-pointer">
-                                <div class="w-16 h-16 rounded-full bg-black/40 border border-white/20 text-white flex items-center justify-center text-2xl backdrop-blur-md transition-transform hover:scale-105">
-                                    <i class="fa-solid fa-play ml-1"></i>
-                                </div>
+                    <div class="yt-player group shadow-2xl">
+                        <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
+                        <video id="videoPlayer" class="hidden w-full h-full" controls></video>
+                        <div id="playBtn" onclick="startVideo()" class="absolute inset-0 flex items-center justify-center cursor-pointer">
+                            <div class="w-14 h-14 rounded-full bg-black/40 border border-white/20 text-white flex items-center justify-center text-xl backdrop-blur-md transition-transform hover:scale-105">
+                                <i class="fa-solid fa-play ml-1"></i>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Native Action Bar (No Brand Colors) -->
                     <div class="mt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-1">
                         <div class="space-y-1">
-                            <h1 id="movieTitle" class="text-lg font-bold tracking-tight">Studio Monitor: Standby</h1>
-                            <p class="text-[9px] text-zinc-400 uppercase tracking-[0.2em] italic font-medium">Architecture Protocol 2.0 // Active</p>
+                            <h1 id="movieTitle" class="text-lg font-bold">Studio Monitor: Standby</h1>
+                            <p id="statusTag" class="text-[9px] text-zinc-400 uppercase tracking-[0.2em] italic font-medium underline">Architecture Ready</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button class="action-btn"><i class="fa-solid fa-download"></i> Download</button>
-                            <button class="action-btn"><i class="fa-solid fa-share-nodes"></i> Share</button>
-                            <button class="action-btn"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
+                            <button onclick="simulateDownload()" class="action-btn"><i class="fa-solid fa-download"></i> Download</button>
+                            <button onclick="simulateShare()" class="action-btn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                            <button onclick="simulateUpload()" class="action-btn"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
                         </div>
                     </div>
                 </div>
@@ -183,28 +106,26 @@
                 <!-- Chat History Flow -->
                 <div id="chatHistory" class="w-full max-w-4xl mt-12 space-y-6 pb-48">
                     <div class="p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm">
-                        <div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic">⚡</div>
+                        <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-[10px] text-accent flex-shrink-0 border border-accent/20 italic">⚡</div>
                         <div class="space-y-1">
                             <p class="text-[10px] font-black text-accent uppercase tracking-widest">Master Architect Greeting</p>
-                            <p class="text-sm opacity-80 leading-relaxed font-medium italic">
-                                Welcome back, Alex. The architecture is ready. Speak your vision.
-                            </p>
+                            <p class="text-sm opacity-80 leading-relaxed font-medium italic">Welcome, Alex. Speak your vision to begin the architecture.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Visionary Chat Input (FixeddvH Responsive) -->
+            <!-- Visionary Chat Input -->
             <div class="shrink-0 p-4 md:p-6 bg-gradient-to-t from-white dark:from-obsidian via-transparent to-transparent">
                 <div class="max-w-3xl mx-auto">
                     <div class="bg-white dark:bg-zinc-900 rounded-[24px] p-1.5 flex items-end border border-zinc-200 dark:border-zinc-800 focus-within:border-accent shadow-2xl transition-all">
                         <button class="w-11 h-11 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"><i class="fa-solid fa-circle-plus text-lg"></i></button>
                         <textarea id="userInput" rows="1" placeholder="" class="flex-1 bg-transparent border-none outline-none text-sm p-3 resize-none max-h-40 text-zinc-800 dark:text-zinc-200 font-medium" oninput="autoGrow(this)"></textarea>
-                        <button onclick="handleSend()" class="w-11 h-11 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl flex items-center justify-center hover:opacity-90 active:scale-95 transition-all m-1">
-                            <i class="fa-solid fa-arrow-up text-lg"></i>
+                        <button id="sendBtn" onclick="handleSend()" class="w-11 h-11 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl flex items-center justify-center hover:opacity-90 active:scale-95 transition-all m-1">
+                            <i id="sendIcon" class="fa-solid fa-arrow-up text-lg"></i>
                         </button>
                     </div>
-                    <p class="text-[8px] text-center mt-3 text-zinc-400 uppercase tracking-[0.4em] font-bold">CineMagic // Zero-Data Core</p>
+                    <p class="text-[8px] text-center mt-3 text-zinc-400 uppercase tracking-[0.4em] font-bold">CineMagic // Universal Hub</p>
                 </div>
             </div>
         </main>
@@ -212,8 +133,11 @@
 
     <script>
         const visionaryPrompts = ["Speak your vision...", "Architect your reality...", "Command the machine..."];
-        function setRandomPlaceholder() {
-            document.getElementById('userInput').placeholder = visionaryPrompts[Math.floor(Math.random() * visionaryPrompts.length)];
+        const setRandomPlaceholder = () => document.getElementById('userInput').placeholder = visionaryPrompts[Math.floor(Math.random() * visionaryPrompts.length)];
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('sidebar-open');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
         }
 
         function toggleTheme() {
@@ -228,56 +152,95 @@
             }
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('sidebar-open');
-            document.getElementById('sidebarOverlay').classList.toggle('hidden');
-        }
-
-        function toggleSettings() {
-            document.getElementById('settingsModal').classList.toggle('hidden');
-        }
-
         function autoGrow(element) {
             element.style.height = "5px";
             element.style.height = (element.scrollHeight) + "px";
         }
 
+        // --- REAL CHAT LOGIC ---
         async function handleSend() {
-    const input = document.getElementById('userInput').value;
-    if(!input) return;
+            const input = document.getElementById('userInput').value;
+            const sendBtn = document.getElementById('sendBtn');
+            const sendIcon = document.getElementById('sendIcon');
+            if(!input || sendBtn.disabled) return;
 
-    // UI မှာ User စာသားပြမယ်
-    appendUserMessage(input);
-    document.getElementById('userInput').value = '';
+            // Update UI: User Message
+            const history = document.getElementById('chatHistory');
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex justify-end animate-in fade-in";
+            userMsg.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-5 rounded-[22px] text-sm max-w-[80%] font-medium shadow-md">${input}</div>`;
+            history.appendChild(userMsg);
+            
+            // Clear & Prep
+            document.getElementById('userInput').value = '';
+            document.getElementById('userInput').style.height = 'auto';
+            sendBtn.disabled = true;
+            sendIcon.className = "fa-solid fa-spinner fa-spin text-lg";
 
-    try {
-        // Vercel Backend ဆီသို့ ပို့မည်
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: input, user_name: "Alex Thorne" })
-        });
-        
-        const data = await response.json();
-        
-        // AI ရဲ့ Refined Reply ကို UI မှာ ပြမယ်
-        appendAIMessage(data.reply);
-        
-        // Dashboard က Token Usage Monitor ကို Update လုပ်မယ် (Simulated)
-        updateTokenUI(data.usage);
+            // Add AI Loading State
+            const aiMsg = document.createElement('div');
+            aiMsg.className = "p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm fade-in opacity-50";
+            aiMsg.innerHTML = `<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-[10px] text-accent shrink-0 italic">⚡</div><p class="text-sm italic">Architecting response...</p>`;
+            history.appendChild(aiMsg);
+            
+            const workspace = document.getElementById('workspace');
+            workspace.scrollTop = workspace.scrollHeight;
 
-    } catch (error) {
-        console.error("Architect Engine Error:", error);
-    }
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: input, user_name: "Alex Thorne" })
+                });
+                const data = await response.json();
+
+                // Update AI Message with real data
+                aiMsg.classList.remove('opacity-50');
+                aiMsg.innerHTML = `
+                    <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-[10px] text-accent shrink-0 italic">⚡</div>
+                    <div class="space-y-3">
+                        <p class="text-[10px] font-black text-accent uppercase tracking-widest">CineMagic Architect</p>
+                        <p class="text-sm opacity-80 leading-relaxed font-medium">${data.reply.replace(/\n/g, '<br>')}</p>
+                    </div>
+                `;
+
+                // If link detected, simulate video load
+                if(input.includes('http')) {
+                    document.getElementById('movieTitle').innerText = "Project: Visual Decoding Active";
+                    document.getElementById('statusTag').innerText = "Analyzing Scene Metadata...";
+                }
+
+            } catch (err) {
+                aiMsg.innerHTML = `<p class="text-xs text-red-500">Connection Error. Is Backend Live?</p>`;
+            } finally {
+                sendBtn.disabled = false;
+                sendIcon.className = "fa-solid fa-arrow-up text-lg";
+                setRandomPlaceholder();
+                workspace.scrollTop = workspace.scrollHeight;
+            }
         }
 
+        // --- BUTTON SIMULATIONS ---
         function startVideo() {
             const video = document.getElementById('videoPlayer');
-            video.src = "https://www.w3schools.com/html/mov_bbb.mp4";
+            video.src = "https://www.w3schools.com/html/mov_bbb.mp4"; // Sample
             document.getElementById('poster').classList.add('hidden');
             document.getElementById('playBtn').classList.add('hidden');
             video.classList.remove('hidden');
             video.play();
+        }
+
+        function simulateDownload() {
+            alert("Preparing 4K Cinematic Master for Telegram Express Delivery...");
+        }
+
+        function simulateShare() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("Project Link Copied to Clipboard.");
+        }
+
+        function simulateUpload() {
+            alert("Initializing Social Sync: TikTok, FB Reels, and YouTube Shorts...");
         }
 
         window.onload = setRandomPlaceholder;
