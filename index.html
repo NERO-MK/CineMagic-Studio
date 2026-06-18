@@ -242,19 +242,33 @@
             element.style.height = (element.scrollHeight) + "px";
         }
 
-        function handleSend() {
-            const input = document.getElementById('userInput').value;
-            if(!input) return;
-            const history = document.getElementById('chatHistory');
-            const userMsg = document.createElement('div');
-            userMsg.className = "flex justify-end animate-in fade-in slide-in-from-bottom-2";
-            userMsg.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-5 rounded-[22px] text-sm max-w-[80%] shadow-lg font-medium">${input}</div>`;
-            history.appendChild(userMsg);
-            document.getElementById('userInput').value = '';
-            document.getElementById('userInput').style.height = 'auto';
-            setRandomPlaceholder();
-            const workspace = document.getElementById('workspace');
-            workspace.scrollTop = workspace.scrollHeight;
+        async function handleSend() {
+    const input = document.getElementById('userInput').value;
+    if(!input) return;
+
+    // UI မှာ User စာသားပြမယ်
+    appendUserMessage(input);
+    document.getElementById('userInput').value = '';
+
+    try {
+        // Vercel Backend ဆီသို့ ပို့မည်
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: input, user_name: "Alex Thorne" })
+        });
+        
+        const data = await response.json();
+        
+        // AI ရဲ့ Refined Reply ကို UI မှာ ပြမယ်
+        appendAIMessage(data.reply);
+        
+        // Dashboard က Token Usage Monitor ကို Update လုပ်မယ် (Simulated)
+        updateTokenUI(data.usage);
+
+    } catch (error) {
+        console.error("Architect Engine Error:", error);
+    }
         }
 
         function startVideo() {
