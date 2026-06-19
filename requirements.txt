@@ -1,23 +1,12 @@
-# --- Web Framework & Server ---
 fastapi
-uvicorn
 mangum
-python-multipart
-pydantic
-
-# --- AI & Intelligence (New SDKs) ---
 groq
 google-genai
-
-# --- Video Ingestion & Processing ---
+python-multipart
+pydantic
 yt-dlp
 moviepy==1.0.3
 proglog
-
-# --- Audio & Voiceover (Zero-Cost) ---
 edge-tts
-asyncio
-
-# --- Utilities ---
 requests
 python-dotenv
