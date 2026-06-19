@@ -5,8 +5,7 @@ google-genai
 python-multipart
 pydantic
 yt-dlp
-moviepy==1.0.3
-proglog
+moviepy
 edge-tts
 requests
 python-dotenv
