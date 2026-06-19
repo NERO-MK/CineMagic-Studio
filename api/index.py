@@ -39,8 +39,8 @@ async def chat(message: str = Form(None)):
     except Exception as e:
         return {"reply": f"Architecture Intel Error: {str(e)}"}
 
-@app.get("/")
-def health():
+@app.get("/api/status")
+def status():
     return {"status": "CineMagic Engine Online"}
 
 handler = Mangum(app)
