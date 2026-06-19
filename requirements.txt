@@ -8,3 +8,5 @@ yt-dlp
 moviepy
 edge-tts
 shikith
+uvicorn
+requests
