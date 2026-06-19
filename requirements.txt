@@ -1,6 +1,6 @@
 fastapi
 mangum
 groq
-google-generativeai
+google-genai
 python-multipart
 pydantic
