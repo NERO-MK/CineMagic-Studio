@@ -1,12 +1,23 @@
+# --- Web Framework & Server ---
 fastapi
+uvicorn
 mangum
-groq
-google-genai>=0.1.1
 python-multipart
 pydantic
+
+# --- AI & Intelligence (New SDKs) ---
+groq
+google-genai
+
+# --- Video Ingestion & Processing ---
 yt-dlp
-moviepy
+moviepy==1.0.3
+proglog
+
+# --- Audio & Voiceover (Zero-Cost) ---
 edge-tts
-shikith
-uvicorn
+asyncio
+
+# --- Utilities ---
 requests
+python-dotenv
