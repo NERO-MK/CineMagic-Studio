@@ -191,6 +191,65 @@
 
             if(!input || sendBtn.disabled) return;
 
+            // 1. User Message Display
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex justify-end animate-in fade-in slide-in-from-bottom-2";
+            userMsg.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-5 rounded-[22px] text-sm max-w-[85%] shadow-lg font-medium">${input}</div>`;
+            history.appendChild(userMsg);
+
+            // UI Prep
+            inputEl.value = '';
+            inputEl.style.height = 'auto';
+            sendBtn.disabled = true;
+            sendIcon.className = "fa-solid fa-spinner fa-spin text-lg";
+
+            // 2. Add Thinking Message
+            const thinkingMsg = document.createElement('div');
+            thinkingMsg.className = "p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm";
+            thinkingMsg.innerHTML = `
+                <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-[10px] italic">⚡</div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest thinking-pulse italic">Architect is thinking</span>
+                    <span class="flex gap-1">
+                        <span class="w-1 h-1 bg-accent rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                        <span class="w-1 h-1 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                        <span class="w-1 h-1 bg-accent rounded-full animate-bounce"></span>
+                    </span>
+                </div>`;
+            history.appendChild(thinkingMsg);
+            workspace.scrollTop = workspace.scrollHeight;
+
+            try {
+                // --- အရေးကြီးသောအပိုင်း: Relative Path /api/chat ကိုပဲ သုံးပါ ---
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'message': input })
+                });
+
+                if (!response.ok) throw new Error("Backend Response Error");
+
+                const data = await response.json();
+                
+                // 3. Replace Thinking with AI Result
+                thinkingMsg.innerHTML = `
+                    <div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner">⚡</div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-accent uppercase tracking-widest">Architect Intel</p>
+                        <p class="text-sm opacity-80 leading-relaxed font-medium italic">${data.reply.replace(/\n/g, '<br>')}</p>
+                    </div>`;
+            } catch (e) {
+                thinkingMsg.innerHTML = `<p class="text-xs text-red-500 p-4 font-bold uppercase tracking-widest text-center">Connection Error. Check Railway Backend Status.</p>`;
+            } finally {
+                sendBtn.disabled = false;
+                sendIcon.className = "fa-solid fa-arrow-up text-lg";
+                setRandomPlaceholder();
+                workspace.scrollTop = workspace.scrollHeight;
+            }
+        }
+
+            if(!input || sendBtn.disabled) return;
+
             // 1. User Message
             const userMsg = document.createElement('div');
             userMsg.className = "flex justify-end animate-in fade-in slide-in-from-bottom-2";
