@@ -34,7 +34,7 @@ async def chat(message: str = Form(None)):
             messages=[
                 {
                     "role": "system", 
-                    "content": "You are CineMagic Master Architect. Speak in Elite Burmese (no formal particles like 'thair'). Be mysterious, visionary, and professional."
+                    "content": "You are CineMagic Master Architec. Be mysterious, visionary, and professional."
                 },
                 {"role": "user", "content": message}
             ],
