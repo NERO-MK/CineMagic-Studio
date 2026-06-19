@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CineMagic | Architect Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { obsidian: '#050505', zincDark: '#0f0f0f', accent: '#3B82F6' },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        html, body { height: 100dvh; overflow: hidden; background-color: #050505; }
+        .main-wrapper { height: 100dvh; display: flex; flex-direction: column; width: 100%; position: relative; }
+        
+        .dark body { background-color: #050505; color: #e5e5e5; }
+        .light body { background-color: #ffffff; color: #171717; }
+
+        /* Sidebar State */
+        #sidebar { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            width: 280px; min-width: 280px;
+        }
+        #sidebar.sidebar-closed { width: 0 !important; min-width: 0 !important; transform: translateX(-100%); opacity: 0; }
+
+        /* Monitor: Fixed at Top */
+        .monitor-section { flex-shrink: 0; z-index: 10; @apply border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-obsidian/80 backdrop-blur-md; }
+        .yt-player { aspect-ratio: 16 / 9; @apply bg-black rounded-xl overflow-hidden relative border border-zinc-200 dark:border-zinc-800 shadow-lg mx-auto; width: 100%; max-width: 600px; }
+        
+        /* Chat: Independently Scrollable */
+        .chat-scroll-area { flex-grow: 1; overflow-y: auto; scroll-behavior: smooth; }
+        .chat-scroll-area::-webkit-scrollbar { width: 3px; }
+        .chat-scroll-area::-webkit-scrollbar-thumb { @apply bg-zinc-300 dark:bg-zinc-800 rounded-full; }
+
+        .native-btn { @apply flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden"></div>
+
+    <div class="main-wrapper flex flex-row">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar-closed fixed lg:static inset-y-0 left-0 bg-white dark:bg-obsidian border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-full z-[100] overflow-hidden">
+            <div class="p-6 flex-1 overflow-y-auto">
+                <button onclick="location.reload()" class="w-full py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-[10px] rounded-lg mb-8 uppercase tracking-widest">+ New Campaign</button>
+                <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4 px-2">Library</p>
+                <div class="space-y-1">
+                    <div class="flex items-center gap-3 px-3 py-2.5 bg-zinc-50 dark:bg-zincDark border border-zinc-100 dark:border-zinc-800 rounded-lg text-[11px] font-bold cursor-pointer">
+                        <i class="fa-solid fa-bolt text-accent"></i> Initial Vision
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-white dark:bg-obsidian">
+            
+            <!-- Header -->
+            <header class="h-14 flex items-center justify-between px-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0 z-20">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="text-zinc-500 p-1 hover:text-accent"><i class="fa-solid fa-bars-staggered"></i></button>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">⚡</span>
+                        <span class="text-xs font-black italic tracking-tighter uppercase text-zinc-800 dark:text-white">CineMagic <span class="text-zinc-400 dark:text-zinc-500 font-normal">/ AI Studio</span></span>
+                    </div>
+                </div>
+                <button onclick="toggleTheme()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                    <i id="theme-icon" class="fa-solid fa-moon text-xs"></i>
+                </button>
+            </header>
+
+            <!-- Fixed Monitor Section -->
+            <div class="monitor-section p-4">
+                <div class="yt-player group">
+                    <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
+                    <video id="videoPlayer" class="hidden w-full h-full" controls></video>
+                    <!-- Play Button - Now strictly centered in container -->
+                    <div id="playBtn" onclick="startVideo()" class="absolute inset-0 flex items-center justify-center cursor-pointer z-20">
+                        <div class="w-14 h-14 rounded-full bg-black/40 border border-white/20 text-white flex items-center justify-center text-xl backdrop-blur-md hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-play ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="max-w-[600px] mx-auto mt-4 flex justify-between items-center gap-2">
+                    <div class="overflow-hidden">
+                        <h1 id="movieTitle" class="text-sm font-bold truncate">Studio Monitor</h1>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="alert('Download started')" class="native-btn"><i class="fa-solid fa-download"></i></button>
+                        <button onclick="alert('Shared')" class="native-btn"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button onclick="alert('Uploading')" class="native-btn"><i class="fa-solid fa-cloud-arrow-up"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable Chat Area -->
+            <div id="workspace" class="chat-scroll-area p-4 md:p-10 flex flex-col items-center">
+                <div id="chatHistory" class="w-full max-w-2xl space-y-6 pb-10">
+                    <!-- Default AI Greeting -->
+                    <div class="p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl flex gap-4">
+                        <div class="w-8 h-8 rounded bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 shrink-0 italic">⚡</div>
+                        <p class="text-sm opacity-80 leading-relaxed font-medium italic">Welcome, Alex. Studio is active. Speak your vision to architect reality.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input (Sticky at Bottom) -->
+            <div class="shrink-0 p-4 md:p-6 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-obsidian">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-white dark:bg-zinc-900 rounded-[22px] p-1.5 flex items-end border border-zinc-200 dark:border-zinc-800 focus-within:border-accent shadow-xl transition-all">
+                        <button class="w-11 h-11 flex items-center justify-center text-zinc-400 hover:text-accent"><i class="fa-solid fa-circle-plus text-lg"></i></button>
+                        <textarea id="userInput" rows="1" placeholder="Describe your vision..." class="flex-1 bg-transparent border-none outline-none text-sm p-3 resize-none max-h-32 text-zinc-800 dark:text-zinc-200 font-medium" oninput="autoGrow(this)"></textarea>
+                        <button id="sendBtn" onclick="handleSend()" class="w-11 h-11 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl flex items-center justify-center hover:opacity-90 active:scale-95 transition-all m-1">
+                            <i id="sendIcon" class="fa-solid fa-arrow-up text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('sidebar-closed');
+            if (window.innerWidth < 1024) document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            document.getElementById('theme-icon').className = html.classList.contains('dark') ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        }
+
+        function autoGrow(element) {
+            element.style.height = "5px";
+            element.style.height = (element.scrollHeight) + "px";
+        }
+
+        async function handleSend() {
+            const input = document.getElementById('userInput').value;
+            const sendBtn = document.getElementById('sendBtn');
+            const sendIcon = document.getElementById('sendIcon');
+            const history = document.getElementById('chatHistory');
+            const workspace = document.getElementById('workspace');
+
+            if(!input || sendBtn.disabled) return;
+
+            // User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex justify-end animate-in fade-in slide-in-from-bottom-2";
+            userMsg.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-4 rounded-[18px] text-sm max-w-[85%] font-medium shadow-md">${input}</div>`;
+            history.appendChild(userMsg);
+
+            // UI Prep
+            document.getElementById('userInput').value = '';
+            document.getElementById('userInput').style.height = 'auto';
+            sendBtn.disabled = true;
+            sendIcon.className = "fa-solid fa-spinner fa-spin";
+            
+            // Auto Scroll Chat
+            workspace.scrollTop = workspace.scrollHeight;
+
+            try {
+                // REAL API CALL TO VERCEL BACKEND
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'message': input })
+                });
+                const data = await response.json();
+                
+                // AI Response Bubble
+                const aiMsg = document.createElement('div');
+                aiMsg.className = "p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl flex gap-4 shadow-sm animate-in fade-in";
+                aiMsg.innerHTML = `<div class="w-8 h-8 rounded bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-500 shrink-0 italic">⚡</div><p class="text-sm opacity-80 leading-relaxed font-medium">${data.reply}</p>`;
+                history.appendChild(aiMsg);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                sendBtn.disabled = false;
+                sendIcon.className = "fa-solid fa-arrow-up";
+                workspace.scrollTop = workspace.scrollHeight;
+            }
+        }
+
+        function startVideo() {
+            const video = document.getElementById('videoPlayer');
+            video.src = "https://www.w3schools.com/html/mov_bbb.mp4";
+            document.getElementById('poster').classList.add('hidden');
+            document.getElementById('playBtn').classList.add('hidden');
+            video.classList.remove('hidden');
+            video.play();
+        }
+    </script>
+</body>
+</html>
