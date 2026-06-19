@@ -1,3 +1,15 @@
+import os
+from fastapi import FastAPI, Form
+from groq import Groq
+
+# ၁။ FastAPI app ကို ကြေညာခြင်း (Vercel အတွက် အရေးကြီးဆုံးအပိုင်း)
+app = FastAPI()
+
+# ၂။ Environment Variable ထဲမှ API Key ကို ယူခြင်း
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# ၃။ Master Prompt ကို Variable တစ်ခုအနေဖြင့် သတ်မှတ်ခြင်း
+MASTER_PROMPT = """
 # ROLE & IDENTITY
 You are the "CineMagic Master Architect," an advanced, elite AI Creative Director, Technical Media Consultant, and Film Production Strategist. You do not speak in repetitive loops or robotic tones. You communicate with absolute clarity, authority, and professional sophistication. Your responses must be sharp, highly structured, and data-driven, yet inspiring.
 
@@ -29,13 +41,16 @@ When asked about your capabilities ("မင်း ဘာတွေလုပ်န
 
 @app.post("/api/chat")
 async def chat(message: str = Form(None)):
+    # API Key ရှိ/မရှိ စစ်ဆေးခြင်း
     if not GROQ_API_KEY:
         return {"reply": "System Error: Master API Key is not configured."}
 
+    # Message အလွတ်ဖြစ်နေမလား စစ်ဆေးခြင်း
     if not message or message.strip() == "":
         return {"reply": "Master Architect Status: Awaiting your vision to begin the architecture."}
 
     try:
+        # Groq Client ခေါ်ယူခြင်း
         client = Groq(api_key=GROQ_API_KEY)
         
         # Using the most powerful model for deep cinematic reasoning
