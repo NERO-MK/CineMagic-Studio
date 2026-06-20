@@ -222,12 +222,18 @@
                 const data = await response.json();
                 
                 thinkingMsg.classList.remove('animate-pulse');
-                thinkingMsg.innerHTML = `
-                    <div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner">⚡</div>
-                    <div class="space-y-1">
-                        <p class="text-[10px] font-black text-accent uppercase tracking-widest">Architect Intel</p>
-                        <p class="text-sm opacity-80 leading-relaxed font-medium italic">${data.reply}</p>
-                    </div>`;
+                
+// index.html ထဲက Thinking Animation နေရာမှာ အစားထိုးရန်
+thinkingMsg.innerHTML = `
+    <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-[10px] italic shrink-0 shadow-inner border border-accent/20">⚡</div>
+    <div class="flex items-center gap-3">
+        <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest thinking-pulse italic">CineMagic is reasoning</span>
+        <div class="flex gap-1.5">
+            <div class="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" style="animation-delay: 0s"></div>
+            <div class="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+        </div>
+    </div>`;
             } catch (e) {
                 thinkingMsg.innerHTML = `<p class="text-xs text-red-500 p-2">Architecture Link Offline.</p>`;
             } finally {
