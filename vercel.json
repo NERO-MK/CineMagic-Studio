@@ -6,8 +6,8 @@
       "destination": "https://cinemagic-engine-production.up.railway.app/api/chat"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "https://cinemagic-engine-production.up.railway.app/api/$1"
+      "source": "/api/projects",
+      "destination": "https://cinemagic-engine-production.up.railway.app/api/projects"
     }
   ]
 }
