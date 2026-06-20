@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CineMagic | Master Architect Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { obsidian: '#050505', zincDark: '#0f0f0f', accent: '#3B82F6' },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        html, body { height: 100dvh; overflow: hidden; transition: background-color 0.3s; margin: 0; padding: 0; }
+        .main-wrapper { height: 100dvh; display: flex; flex-direction: row; width: 100%; position: relative; }
+        .dark body { background-color: #050505; color: #e5e5e5; }
+        .light body { background-color: #ffffff; color: #171717; }
+        #sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 280px; min-width: 280px; }
+        #sidebar.sidebar-closed { width: 0 !important; min-width: 0 !important; transform: translateX(-100%); opacity: 0; pointer-events: none; }
+        .monitor-fixed { flex-shrink: 0; z-index: 20; @apply border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-obsidian/80 backdrop-blur-md; }
+        .player-frame { position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 500px; margin: 0 auto; @apply bg-black rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-xl; }
+        .video-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 30; }
+        .chat-scroll { flex-grow: 1; overflow-y: auto; scroll-behavior: smooth; }
+        .chat-scroll::-webkit-scrollbar { width: 3px; }
+        .chat-scroll::-webkit-scrollbar-thumb { @apply bg-zinc-300 dark:bg-zinc-800 rounded-full; }
+        .thinking-pulse { animation: pulseFade 1.5s infinite; }
+        @keyframes pulseFade { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .native-btn { @apply flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95; }
+        .modal-bg { background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); }
+    </style>
+</head>
+<body class="antialiased font-sans">
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden"></div>
+
+    <!-- Profile Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-[200] modal-bg hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zincDark w-full max-w-md rounded-[32px] border border-zinc-200 dark:border-zinc-800 p-8 shadow-2xl text-zinc-800 dark:text-zinc-100">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold italic tracking-tighter uppercase">Architect Profile</h2>
+                <button onclick="toggleSettings()" class="text-zinc-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-100 dark:border-white/5">
+                    <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center font-bold text-white italic text-lg shadow-lg">A</div>
+                    <div><p class="text-sm font-bold">Alex Thorne</p><p class="text-[10px] text-zinc-500 uppercase font-black italic">Master Architect</p></div>
+                </div>
+                <button class="w-full py-4 text-xs font-bold text-red-500 border border-red-500/20 rounded-2xl hover:bg-red-500/10 transition-colors">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-wrapper flex flex-row">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar-closed bg-white dark:bg-obsidian border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-full z-[100] overflow-hidden fixed lg:static inset-y-0 left-0">
+            <div class="p-6 flex-1 overflow-y-auto chat-scroll">
+                <button onclick="location.reload()" class="w-full py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-[10px] rounded-lg mb-8 uppercase tracking-widest shadow-md hover:opacity-90 transition-all">+ NEW PROJECT</button>
+                <nav class="space-y-8">
+                    <div>
+                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 px-2 italic underline">Library</p>
+                        <div id="sidebarLibrary" class="space-y-1">
+                            <!-- Projects will be loaded here from DB -->
+                            <p class="text-[10px] text-zinc-400 p-2 italic">Syncing archive...</p>
+                        </div>
+                    </div>
+                    <!-- Usage Monitor -->
+                    <div class="space-y-5 px-2">
+                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest italic">Usage Monitor</p>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-zinc-400">Daily Videos</span><span class="dark:text-zinc-300">3 / 5</span></div>
+                            <div class="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width: 60%;"></div></div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div class="mt-auto p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-transparent">
+                <div onclick="toggleSettings()" class="flex items-center gap-3 cursor-pointer group">
+                    <div class="w-9 h-9 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center font-bold text-white dark:text-zinc-900 shadow-md group-hover:scale-105 transition-transform italic text-xs">A</div>
+                    <div class="flex-1 overflow-hidden"><p class="text-[10px] font-black uppercase truncate text-zinc-800 dark:text-zinc-200">Alex Thorne</p><p class="text-[8px] font-bold text-accent uppercase tracking-widest italic text-left">Settings</p></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-white dark:bg-obsidian">
+            <header class="h-14 flex items-center justify-between px-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0 bg-white/80 dark:bg-obsidian/80 backdrop-blur-md z-30">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="text-zinc-500 p-1 hover:text-accent transition-colors"><i class="fa-solid fa-bars-staggered"></i></button>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl filter drop-shadow-sm">⚡</span>
+                        <span class="text-xs font-black italic tracking-tighter uppercase text-zinc-800 dark:text-white">CineMagic <span class="text-zinc-400 dark:text-zinc-500 font-normal">/ AI Studio</span></span>
+                    </div>
+                </div>
+                <button onclick="toggleTheme()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors shadow-sm"><i id="theme-icon" class="fa-solid fa-moon text-xs"></i></button>
+            </header>
+
+            <!-- Fixed Monitor -->
+            <div class="monitor-fixed p-4 md:p-6 shadow-sm">
+                <div class="player-frame group">
+                    <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
+                    <video id="videoPlayer" class="hidden w-full h-full" controls></video>
+                    <div id="playBtn" onclick="startVideo()" class="video-play-btn cursor-pointer z-20">
+                        <div class="w-14 h-14 rounded-full bg-black/50 border border-white/20 text-white flex items-center justify-center text-xl backdrop-blur-md transition-all hover:scale-110 shadow-2xl"><i class="fa-solid fa-play ml-1"></i></div>
+                    </div>
+                </div>
+                <div class="max-w-[500px] mx-auto mt-4 flex justify-between items-center gap-4 px-1">
+                    <h1 class="text-xs font-bold tracking-tight truncate opacity-80 uppercase">Studio Monitor</h1>
+                    <div class="flex items-center gap-2">
+                        <button onclick="alert('Download Triggered')" class="native-btn"><i class="fa-solid fa-download"></i></button>
+                        <button onclick="alert('Shared')" class="native-btn"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button onclick="alert('Syncing to Cloud')" class="native-btn"><i class="fa-solid fa-cloud-arrow-up"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Scroll -->
+            <div id="workspace" class="chat-scroll p-4 md:p-10 flex flex-col items-center">
+                <div id="chatHistory" class="w-full max-w-2xl space-y-6 pb-24 text-zinc-800 dark:text-zinc-100">
+                    <div class="p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm">
+                        <div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner">⚡</div>
+                        <p class="text-sm opacity-80 leading-relaxed font-medium italic">Welcome Architect Thorne. The studio is active. Speak your vision.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="shrink-0 p-4 md:p-6 bg-gradient-to-t from-white dark:from-obsidian via-transparent to-transparent z-30">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-white dark:bg-zinc-900 rounded-[24px] p-1.5 flex items-end border border-zinc-200 dark:border-zinc-800 focus-within:border-accent shadow-xl transition-all">
+                        <button onclick="alert('Attachment tool loading...')" class="w-11 h-11 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"><i class="fa-solid fa-plus text-lg"></i></button>
+                        <textarea id="userInput" rows="1" placeholder="Describe your vision..." class="flex-1 bg-transparent border-none outline-none text-sm p-3 resize-none max-h-40 text-zinc-800 dark:text-zinc-200 font-medium" oninput="autoGrow(this)"></textarea>
+                        <button id="sendBtn" onclick="handleSend()" class="w-11 h-11 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl flex items-center justify-center hover:opacity-90 active:scale-95 transition-all m-1">
+                            <i id="sendIcon" class="fa-solid fa-arrow-up text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- API CONFIG ---
+        const API_URL = "/api/chat";
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('sidebar-closed');
+            if (window.innerWidth < 1024) document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            document.getElementById('theme-icon').className = html.classList.contains('dark') ? 'fa-solid fa-moon text-xs' : 'fa-solid fa-sun text-xs';
+        }
+
+        function toggleSettings() { document.getElementById('settingsModal').classList.toggle('hidden'); }
+        function autoGrow(el) { el.style.height = "5px"; el.style.height = (el.scrollHeight) + "px"; }
+
+        // --- FETCH SIDEBAR PROJECTS FROM DB ---
+        async function loadProjects() {
+            try {
+                const res = await fetch('/api/projects');
+                const projects = await res.json();
+                const container = document.getElementById('sidebarLibrary');
+                if (projects.length > 0) {
+                    container.innerHTML = projects.map(p => `
+                        <div class="flex items-center gap-3 px-3 py-2 bg-zinc-50 dark:bg-zinc-900 rounded-lg text-[11px] font-bold border border-zinc-100 dark:border-zinc-800 cursor-pointer hover:border-accent transition">
+                            <i class="fa-solid fa-film text-accent"></i> ${p.title}
+                        </div>
+                    `).join('');
+                }
+            } catch (e) { console.log("DB sync unavailable"); }
+        }
+
+        // --- HANDLE CHAT & THINKING ---
+        async function handleSend() {
+            const inputEl = document.getElementById('userInput');
+            const input = inputEl.value.trim();
+            const sendBtn = document.getElementById('sendBtn');
+            const sendIcon = document.getElementById('sendIcon');
+            const history = document.getElementById('chatHistory');
+            const workspace = document.getElementById('workspace');
+
+            if(!input || sendBtn.disabled) return;
+
+            // User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex justify-end animate-in fade-in slide-in-from-bottom-2";
+            userMsg.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-5 rounded-[22px] text-sm max-w-[80%] shadow-lg font-medium">${input}</div>`;
+            history.appendChild(userMsg);
+
+            // Thinking State
+            inputEl.value = '';
+            inputEl.style.height = 'auto';
+            sendBtn.disabled = true;
+            sendIcon.className = "fa-solid fa-spinner fa-spin text-lg";
+
+            const thinkingMsg = document.createElement('div');
+            thinkingMsg.className = "p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm animate-pulse";
+            thinkingMsg.innerHTML = `
+                <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-[10px] italic">⚡</div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest thinking-pulse italic">Thinking...</span>
+                </div>`;
+            history.appendChild(thinkingMsg);
+            workspace.scrollTop = workspace.scrollHeight;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'message': input })
+                });
+                const data = await response.json();
+                
+                thinkingMsg.classList.remove('animate-pulse');
+                thinkingMsg.innerHTML = `
+                    <div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner">⚡</div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-accent uppercase tracking-widest">Architect Intel</p>
+                        <p class="text-sm opacity-80 leading-relaxed font-medium italic">${data.reply}</p>
+                    </div>`;
+            } catch (e) {
+                thinkingMsg.innerHTML = `<p class="text-xs text-red-500 p-2">Architecture Link Offline.</p>`;
+            } finally {
+                sendBtn.disabled = false;
+                sendIcon.className = "fa-solid fa-arrow-up text-lg";
+                workspace.scrollTop = workspace.scrollHeight;
+            }
+        }
+
+        function startVideo() {
+            const video = document.getElementById('videoPlayer');
+            video.src = "https://www.w3schools.com/html/mov_bbb.mp4";
+            document.getElementById('poster').classList.add('hidden');
+            document.getElementById('playBtn').classList.add('hidden');
+            video.classList.remove('hidden');
+            video.play();
+        }
+
+        window.onload = () => {
+            loadProjects();
+            document.getElementById('userInput').placeholder = "Ask CineMagic...";
+        };
+    </script>
+</body>
+</html>
