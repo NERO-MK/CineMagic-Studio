@@ -8,6 +8,10 @@
     {
       "source": "/api/projects",
       "destination": "https://cinemagic-engine-production.up.railway.app/api/projects"
+    },
+    {
+      "source": "/api/chats/:id",
+      "destination": "https://cinemagic-engine-production.up.railway.app/api/chats/:id"
     }
   ]
 }
