@@ -150,6 +150,29 @@
     </div>
 
     <script>
+        
+async function loadLibrary() {
+    try {
+        const res = await fetch('https://cinemagic-engine-production.up.railway.app/api/projects');
+        const projects = await res.json();
+        const libraryContainer = document.querySelector('nav .space-y-1'); // Library list div
+        
+        if (projects.length > 0) {
+            libraryContainer.innerHTML = projects.map(p => `
+                <div class="flex items-center gap-3 px-3 py-2.5 bg-zinc-50 dark:bg-zincDark border border-zinc-100 dark:border-zinc-800 rounded-lg text-[11px] font-bold cursor-pointer hover:border-accent/40 transition">
+                    <i class="fa-solid fa-bolt text-accent"></i> ${p.title}
+                </div>
+            `).join('');
+        }
+    } catch (e) { console.log("Library sync offline"); }
+}
+
+// Page load တာနဲ့ Library ကို ခေါ်မယ်
+window.addEventListener('load', () => {
+    loadLibrary();
+    setRandomPlaceholder();
+});
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
