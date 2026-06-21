@@ -15,10 +15,7 @@ function autoGrow(el) {
 }
 
 function handleVoiceUpload(input) {
-    if(input.files && input.files[0]) {
-        selectedVoiceFile = input.files[0];
-        alert("Voice Sample Loaded for Cloning Engine.");
-    }
+    if(input.files && input.files[0]) { selectedVoiceFile = input.files[0]; alert("Voice Sample Loaded."); }
 }
 
 async function handleSend() {
@@ -31,16 +28,17 @@ async function handleSend() {
     const history = document.getElementById('chatHistory');
     const userMsg = document.createElement('div');
     userMsg.className = "flex justify-end mb-8 animate-in fade-in";
-    userMsg.innerHTML = `<div class="bg-slate-900 text-white px-8 py-5 rounded-[2.5rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap leading-relaxed">${input || "Processing Voice Clone..."}</div>`;
+    userMsg.innerHTML = `<div class="bg-slate-900 text-white px-8 py-5 rounded-[2.5rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap">${input || "Cloning Voice..."}</div>`;
     history.appendChild(userMsg);
 
     inputEl.value = '';
     inputEl.style.height = "48px";
     sendBtn.disabled = true;
 
+    // Thinking
     const thinking = document.createElement('div');
     thinking.className = "flex gap-6 items-start animate-in fade-in mb-8";
-    thinking.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm italic">⚡</div><p class="text-sm font-bold text-slate-400 uppercase tracking-widest animate-pulse mt-2 italic">Lead Producer is processing...</p>`;
+    thinking.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm italic text-[8px]">⚡</div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest animate-pulse mt-2.5 italic thinking-pulse">Producer is reasoning...</p>`;
     history.appendChild(thinking);
     document.getElementById('workspace').scrollTop = document.getElementById('workspace').scrollHeight;
 
@@ -54,16 +52,7 @@ async function handleSend() {
         const data = await response.json();
         currentProjectId = data.project_id;
         
-        thinking.innerHTML = `
-            <div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm italic text-left">⚡</div>
-            <div class="space-y-4 flex-1">
-                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 italic text-left">${data.role_identity}</p>
-                <div class="text-sm opacity-90 leading-relaxed font-medium text-slate-800 text-left">${data.reply.replace(/\n/g, '<br>')}</div>
-                <div class="flex gap-3">
-                    <button onclick="alert('Baking started...')" class="px-5 py-2 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all">🔥 Bake 4K Masterpiece</button>
-                </div>
-            </div>`;
-        
+        thinking.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm text-[8px]">⚡</div><div class="space-y-2"><p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 italic text-left">${data.role_identity}</p><p class="text-sm opacity-90 leading-relaxed font-medium text-slate-800 text-left">${data.reply.replace(/\n/g, '<br>')}</p></div>`;
         loadSidebarArchives();
     } catch (e) { thinking.innerHTML = `<p class="text-xs text-red-500 p-2 text-left italic">Connection Offline.</p>`; }
     finally { sendBtn.disabled = false; document.getElementById('workspace').scrollTop = document.getElementById('workspace').scrollHeight; }
@@ -74,14 +63,14 @@ async function loadSidebarArchives() {
         const response = await fetch('/api/projects');
         const projects = await response.json();
         const container = document.getElementById('sidebarLibrary');
-        if (projects && projects.length > 0) {
+        if (projects.length > 0) {
             container.innerHTML = projects.map(p => `
-                <div onclick="alert('Archive loaded')" class="flex flex-col gap-1 px-5 py-5 bg-slate-50 border border-slate-100 rounded-3xl cursor-pointer hover:border-primary transition-all text-left mb-3 shadow-sm group">
-                    <span class="text-[8px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-full w-max italic">Movie</span>
+                <div onclick="alert('Restore session ID: ${p.id}')" class="flex flex-col gap-1 px-5 py-5 bg-slate-50 border border-slate-100 rounded-3xl cursor-pointer hover:border-primary transition-all text-left mb-3 shadow-sm group">
+                    <span class="text-[8px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-full w-max italic">${p.style || 'Archive'}</span>
                     <p class="text-xs font-bold truncate text-slate-700">${p.title}</p>
                 </div>`).join('');
         }
-    } catch (e) { console.log("DB sync offline"); }
+    } catch (e) { console.log("DB offline"); }
 }
 
 function startVideo() {
