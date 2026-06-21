@@ -34,16 +34,20 @@ function toggleSettings() {
 }
 
 // --- 2. DYNAMIC INPUT LOGIC (Line-Based) ---
+
 function autoGrow(el) {
-    // အမြင့်ကို အရင် reset လုပ်ပြီးမှ scrollHeight အတိုင်း ပြန်ချိန်ညှိသည်
-    el.style.height = "auto"; 
-    el.style.height = (el.scrollHeight) + "px";
+    const lineHeight = 24; // line-height နဲ့ ညှိထားသော pixel
+    const maxLines = 5;
+    const maxHeight = lineHeight * maxLines;
+
+    el.style.height = "auto"; // အရင် reset လုပ်မယ်
     
-    // စာရိုက်နေစဉ် UI က အမြင့် 240px (စာကြောင်း ၁၀ ကြောင်းခန့်) ကျော်မှ scroll ပေးမည်
-    if (el.scrollHeight > 240) {
-        el.style.overflowY = "auto";
+    if (el.scrollHeight > maxHeight) {
+        el.style.height = maxHeight + "px"; // 120px မှာ ရပ်မယ်
+        el.style.overflowY = "auto"; // scroll ပေးမယ်
     } else {
-        el.style.overflowY = "hidden";
+        el.style.height = el.scrollHeight + "px"; // စာသားရှိသလောက် ကျယ်မယ်
+        el.style.overflowY = "hidden"; // scroll ဖျောက်မယ်
     }
 }
 
