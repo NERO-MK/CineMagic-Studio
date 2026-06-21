@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineMagic | Master Architect Studio</title>
+    <title>CineMagic | Master Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { colors: { obsidian: '#050505', zincDark: '#0f0f0f', accent: '#3B82F6' } } }
+            theme: { extend: { colors: { obsidian: '#050505', zincDark: '#0f0f0f', accent: '#3B82F6' }, fontFamily: { sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'] } } }
         }
     </script>
     <style>
@@ -18,60 +18,102 @@
         .main-wrapper { height: 100dvh; display: flex; flex-direction: row; width: 100%; position: relative; }
         .dark body { background-color: #050505; color: #e5e5e5; }
         .light body { background-color: #ffffff; color: #171717; }
-        #sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 280px; min-width: 280px; }
-        #sidebar.sidebar-closed { width: 0 !important; min-width: 0 !important; transform: translateX(-100%); opacity: 0; pointer-events: none; }
+
+        /* Sidebar Logic - FIXED */
+        #sidebar { 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease;
+            width: 280px; 
+            min-width: 280px;
+        }
+        #sidebar.sidebar-closed { 
+            width: 0 !important; 
+            min-width: 0 !important; 
+            transform: translateX(-100%); 
+        }
+
         .monitor-fixed { flex-shrink: 0; z-index: 20; @apply border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-obsidian/80 backdrop-blur-md; }
         .player-frame { position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 500px; margin: 0 auto; @apply bg-black rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-xl; }
         .video-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 30; }
         .chat-scroll { flex-grow: 1; overflow-y: auto; scroll-behavior: smooth; }
         .chat-scroll::-webkit-scrollbar { width: 3px; }
         .chat-scroll::-webkit-scrollbar-thumb { @apply bg-zinc-300 dark:bg-zinc-800 rounded-full; }
+        
+        .native-btn { @apply flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95; }
         .thinking-pulse { animation: pulseFade 1.5s infinite; }
         @keyframes pulseFade { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        .native-btn { @apply flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-bold uppercase border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95; }
-        .modal-bg { background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); }
     </style>
 </head>
-<body class="antialiased font-sans">
+<body class="antialiased">
 
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-[90] hidden"></div>
 
+    <!-- Account Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-[200] modal-bg hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+        <div class="bg-white dark:bg-zincDark w-full max-w-md rounded-[32px] border border-zinc-200 dark:border-zinc-800 p-8 shadow-2xl text-zinc-800 dark:text-zinc-100">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold italic tracking-tighter uppercase">Architect Profile</h2>
+                <button onclick="toggleSettings()" class="text-zinc-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-white/5 rounded-2xl border border-zinc-100 dark:border-white/5">
+                    <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center font-bold text-white shadow-lg italic text-lg">A</div>
+                    <div><p class="text-sm font-bold text-zinc-800 dark:text-zinc-100">Alex Thorne</p><p class="text-[10px] text-zinc-500 uppercase font-black italic">Lead Producer</p></div>
+                </div>
+                <div class="p-5 border border-zinc-100 dark:border-zinc-800 rounded-2xl space-y-4">
+                    <div class="flex justify-between text-xs"><span class="text-zinc-500 font-bold uppercase tracking-widest">Status</span><span class="text-accent font-bold uppercase">Free Tier</span></div>
+                </div>
+                <button class="w-full py-4 text-xs font-bold text-red-500 border border-red-500/20 rounded-2xl hover:bg-red-500/10 transition-colors">Log Out</button>
+            </div>
+        </div>
+    </div>
+
     <div class="main-wrapper flex flex-row">
-        <!-- Sidebar -->
+        <!-- Sidebar: CLOSED BY DEFAULT -->
         <aside id="sidebar" class="sidebar-closed bg-white dark:bg-obsidian border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-full z-[100] overflow-hidden fixed lg:static inset-y-0 left-0">
             <div class="p-6 flex-1 overflow-y-auto chat-scroll">
-                <button onclick="createNewProject()" class="w-full py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-[10px] rounded-lg mb-8 uppercase tracking-widest shadow-md hover:opacity-90">+ NEW PROJECT</button>
-                <nav class="space-y-8 text-left">
+                <button onclick="location.reload()" class="w-full py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold text-[10px] rounded-lg mb-8 uppercase tracking-widest shadow-md hover:opacity-90">+ NEW PROJECT</button>
+                <nav class="space-y-8">
                     <div>
-                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 px-2 italic underline">Archives</p>
+                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 px-2 italic underline text-left">Archives</p>
                         <div id="sidebarLibrary" class="space-y-1">
-                            <p class="text-[10px] text-zinc-400 p-2">Syncing...</p>
+                            <!-- Archives will load here -->
+                        </div>
+                    </div>
+                    <!-- Usage Monitor -->
+                    <div class="space-y-5 px-2 text-left">
+                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest italic">Usage Monitor</p>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-zinc-400">Daily Videos</span><span class="dark:text-zinc-300">3 / 5</span></div>
+                            <div class="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-accent" style="width: 60%;"></div></div>
+                        </div>
+                        <div class="space-y-2 pt-1">
+                            <div class="flex justify-between text-[9px] font-black uppercase tracking-tighter"><span class="text-zinc-400">Tokens</span><span class="dark:text-zinc-300">1.2k / 5k</span></div>
+                            <div class="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-zinc-400 dark:bg-zinc-600" style="width: 25%;"></div></div>
                         </div>
                     </div>
                 </nav>
             </div>
             <div class="mt-auto p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-transparent">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center font-bold text-white dark:text-zinc-900 shadow-md italic text-xs">A</div>
-                    <p class="text-[10px] font-black uppercase truncate text-zinc-800 dark:text-zinc-200">Alex Thorne</p>
+                <div onclick="toggleSettings()" class="flex items-center gap-3 cursor-pointer group">
+                    <div class="w-9 h-9 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center font-bold text-white dark:text-zinc-900 shadow-md group-hover:scale-105 transition-transform text-xs">A</div>
+                    <div class="flex-1 overflow-hidden"><p class="text-[10px] font-black uppercase truncate text-zinc-800 dark:text-zinc-200">Alex Thorne</p><p class="text-[8px] font-bold text-accent uppercase tracking-widest text-left">Settings</p></div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Workspace -->
+        <!-- Main Content Area -->
         <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-white dark:bg-obsidian">
-            <header class="h-14 flex items-center justify-between px-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0 bg-white/80 dark:bg-obsidian/80 backdrop-blur-md z-30">
+            <header class="h-14 flex items-center justify-between px-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0 bg-white/80 dark:bg-obsidian/80 backdrop-blur-md z-[80]">
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleSidebar()" class="text-zinc-500 p-1 hover:text-accent"><i class="fa-solid fa-bars-staggered"></i></button>
+                    <button onclick="toggleSidebar()" class="text-zinc-500 p-1 hover:text-accent transition-colors"><i class="fa-solid fa-bars-staggered"></i></button>
                     <div class="flex items-center gap-2">
-                        <span class="text-xl">⚡</span>
+                        <span class="text-xl filter drop-shadow-sm">⚡</span>
                         <span class="text-xs font-black italic tracking-tighter uppercase text-zinc-800 dark:text-white">CineMagic <span class="text-zinc-400 dark:text-zinc-500 font-normal">/ AI Studio</span></span>
                     </div>
                 </div>
-                <button onclick="toggleTheme()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 shadow-sm"><i id="theme-icon" class="fa-solid fa-moon text-xs"></i></button>
+                <button onclick="toggleTheme()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 shadow-sm transition-colors"><i id="theme-icon" class="fa-solid fa-moon text-xs"></i></button>
             </header>
 
-            <!-- Fixed Monitor -->
             <div class="monitor-fixed p-4 md:p-6 shadow-sm">
                 <div class="player-frame group">
                     <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
@@ -82,31 +124,28 @@
                 </div>
                 <div class="max-w-[500px] mx-auto mt-4 flex justify-between items-center gap-4 px-1">
                     <h1 id="movieTitle" class="text-xs font-bold tracking-tight truncate opacity-80 uppercase text-left">Studio Monitor</h1>
-                    <div class="flex items-center gap-2">
-                        <button onclick="alert('Downloading...')" class="native-btn"><i class="fa-solid fa-download"></i></button>
-                        <button onclick="alert('Shared')" class="native-btn"><i class="fa-solid fa-share-nodes"></i></button>
-                        <button onclick="alert('Social Sync')" class="native-btn"><i class="fa-solid fa-cloud-arrow-up"></i></button>
+                    <div class="flex gap-2">
+                        <button class="native-btn"><i class="fa-solid fa-download"></i></button>
+                        <button class="native-btn"><i class="fa-solid fa-share-nodes"></i></button>
+                        <button class="native-btn"><i class="fa-solid fa-cloud-arrow-up"></i></button>
                     </div>
                 </div>
             </div>
 
-            <!-- Independent Chat Area -->
             <div id="workspace" class="chat-scroll p-4 md:p-10 flex flex-col items-center">
-                <div id="chatHistory" class="w-full max-w-2xl space-y-6 pb-24 text-left">
-                    <!-- Chats will load here -->
+                <div id="chatHistory" class="w-full max-w-2xl space-y-6 pb-24 text-left text-zinc-800 dark:text-zinc-100">
                     <div class="p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm">
-                        <div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner border border-zinc-200 dark:border-zinc-800">⚡</div>
-                        <p class="text-sm opacity-80 leading-relaxed font-medium italic">Welcome, Alex. Provide your vision to begin the architecture.</p>
+                        <div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner">⚡</div>
+                        <p class="text-sm opacity-80 leading-relaxed font-medium">Hello Alex. Production studio is ready. Speak your vision.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Sticky Chat Input -->
             <div class="shrink-0 p-4 md:p-6 bg-gradient-to-t from-white dark:from-obsidian via-transparent to-transparent z-30">
                 <div class="max-w-2xl mx-auto">
-                    <div class="bg-white dark:bg-zinc-900 rounded-[24px] p-1.5 flex items-end border border-zinc-200 dark:border-zinc-800 focus-within:border-accent shadow-xl transition-all">
-                        <button onclick="alert('File upload coming soon')" class="w-11 h-11 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"><i class="fa-solid fa-circle-plus text-lg"></i></button>
-                        <textarea id="userInput" rows="1" placeholder="Ask CineMagic..." class="flex-1 bg-transparent border-none outline-none text-sm p-3 resize-none max-h-40 text-zinc-800 dark:text-zinc-200 font-medium" oninput="autoGrow(this)"></textarea>
+                    <div class="bg-white dark:bg-zinc-900 rounded-[24px] p-1.5 flex items-end border border-zinc-200 dark:border-zinc-800 focus-within:border-accent shadow-xl">
+                        <button class="w-11 h-11 flex items-center justify-center text-zinc-400 hover:text-zinc-600 transition-colors"><i class="fa-solid fa-circle-plus text-lg"></i></button>
+                        <textarea id="userInput" rows="1" placeholder="Ask CineMagic..." class="flex-1 bg-transparent border-none outline-none text-sm p-3 resize-none max-h-40 font-medium" oninput="autoGrow(this)"></textarea>
                         <button id="sendBtn" onclick="handleSend()" class="w-11 h-11 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl flex items-center justify-center hover:opacity-90 active:scale-95 transition-all m-1">
                             <i id="sendIcon" class="fa-solid fa-arrow-up text-lg"></i>
                         </button>
@@ -118,10 +157,16 @@
 
     <script>
         let currentProjectId = null;
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('sidebar-closed');
-            if (window.innerWidth < 1024) document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        
+        function toggleSidebar() { 
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('sidebar-closed');
+            
+            // Handle mobile overlay
+            if (window.innerWidth < 1024) {
+                overlay.classList.toggle('hidden');
+            }
         }
 
         function toggleTheme() {
@@ -130,122 +175,88 @@
             document.getElementById('theme-icon').className = html.classList.contains('dark') ? 'fa-solid fa-moon text-xs' : 'fa-solid fa-sun text-xs';
         }
 
+        function toggleSettings() { document.getElementById('settingsModal').classList.toggle('hidden'); }
         function autoGrow(el) { el.style.height = "5px"; el.style.height = (el.scrollHeight) + "px"; }
 
-        function createNewProject() { location.reload(); }
-
-        // --- FETCH LIBRARY ---
-         // index.html ထဲက loadSidebarLibrary function ကို ဤအတိုင်း အစားထိုးပါ
-async function loadSidebarLibrary() {
-    try {
-        console.log("Syncing with Railway Archive...");
-        const response = await fetch('/api/projects');
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const projects = await response.json();
-        const container = document.getElementById('sidebarLibrary');
-        if (!container) return;
-
-        if (!projects || projects.length === 0) {
-            container.innerHTML = '<p class="text-[10px] text-zinc-500 p-2 italic text-left">No archives found.</p>';
-            return;
+        // --- DATABASE LOGIC ---
+        async function loadSidebar() {
+            try {
+                const response = await fetch('/api/projects');
+                const projects = await response.json();
+                const container = document.getElementById('sidebarLibrary');
+                if (projects.length) {
+                    container.innerHTML = projects.map(p => `
+                        <div onclick="loadProject('${p.id}', '${p.title}')" class="flex items-center gap-3 px-3 py-2 bg-zinc-50 dark:bg-zincDark border border-zinc-100 dark:border-zinc-800 rounded-lg text-[11px] font-bold cursor-pointer hover:border-accent transition text-left">
+                            <i class="fa-solid fa-clapperboard text-accent"></i> <span class="truncate">${p.title}</span>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) { console.log("DB sync offline"); }
         }
 
-        container.innerHTML = projects.map(p => `
-            <div onclick="loadChatHistory('${p.id}', '${p.title}')" class="flex items-center gap-3 px-3 py-2.5 bg-zinc-50 dark:bg-zincDark border border-zinc-100 dark:border-zinc-800 rounded-lg text-[11px] font-bold cursor-pointer transition hover:border-accent/40 text-left">
-                <i class="fa-solid fa-clapperboard text-accent"></i>
-                <span class="truncate">${p.title || 'Untitled'}</span>
-            </div>
-        `).join('');
-
-    } catch (e) {
-        console.error("Library Load Error:", e);
-        document.getElementById('sidebarLibrary').innerHTML = '<p class="text-[9px] text-red-500 p-2 italic text-left">Sync Failed.</p>';
-    }
-}
-
-
-        // --- FETCH CHAT HISTORY ---
-        async function loadChatHistory(projectId, title) {
-            currentProjectId = projectId;
+        async function loadProject(id, title) {
+            currentProjectId = id;
             document.getElementById('movieTitle').innerText = title;
             const history = document.getElementById('chatHistory');
-            history.innerHTML = '<p class="text-xs p-10 opacity-50 italic">Syncing session history...</p>';
+            history.innerHTML = '<p class="text-xs p-10 opacity-50 italic">Restoring session...</p>';
             if(window.innerWidth < 1024) toggleSidebar();
-
             try {
-                const response = await fetch(`/api/chats/${projectId}`);
-                const chats = await response.json();
+                const res = await fetch(`/api/chats/${id}`);
+                const chats = await res.json();
                 history.innerHTML = '';
-                
-                chats.forEach(msg => {
+                chats.forEach(c => {
                     const bubble = document.createElement('div');
-                    if (msg.role === 'user') {
-                        bubble.className = "flex justify-end animate-in fade-in";
-                        bubble.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-5 rounded-[22px] text-sm max-w-[85%] font-medium shadow-lg">${msg.content}</div>`;
-                    } else {
-                        bubble.className = "p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm";
-                        bubble.innerHTML = `<div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner">⚡</div><p class="text-sm opacity-80 leading-relaxed font-medium text-left">${msg.content.replace(/\n/g, '<br>')}</p>`;
-                    }
+                    bubble.className = c.role === 'user' ? "flex justify-end fade-in" : "p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm";
+                    bubble.innerHTML = c.role === 'user' ? `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-4 rounded-[20px] text-sm max-w-[85%] font-medium">${c.content}</div>` : `<div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner border border-zinc-200 dark:border-zinc-800">⚡</div><div class="space-y-1"><p class="text-[10px] font-black text-accent uppercase tracking-widest text-left">${c.role_identity || 'Lead Producer'}</p><p class="text-sm opacity-80 leading-relaxed font-medium text-left">${c.content.replace(/\n/g, '<br>')}</p></div>`;
                     history.appendChild(bubble);
                 });
-                document.getElementById('workspace').scrollTop = document.getElementById('workspace').scrollHeight;
-            } catch (e) { alert("History sync failed."); }
+            } catch (e) { console.log(e); }
         }
 
         async function handleSend() {
             const input = document.getElementById('userInput').value.trim();
             if(!input) return;
-
-            // UI user message
+            const sendBtn = document.getElementById('sendBtn');
             const history = document.getElementById('chatHistory');
+            const workspace = document.getElementById('workspace');
+
             const userMsg = document.createElement('div');
             userMsg.className = "flex justify-end fade-in";
-            userMsg.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-5 rounded-[22px] text-sm max-w-[85%] font-medium shadow-lg">${input}</div>`;
+            userMsg.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 p-4 rounded-[18px] text-sm max-w-[85%] shadow-md font-medium">${input}</div>`;
             history.appendChild(userMsg);
 
             document.getElementById('userInput').value = '';
             document.getElementById('userInput').style.height = 'auto';
-            document.getElementById('sendBtn').disabled = true;
+            sendBtn.disabled = true;
 
             const thinking = document.createElement('div');
-            thinking.className = "p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 animate-pulse";
-            thinking.innerHTML = `<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-[10px] italic">⚡</div><span class="text-xs font-bold text-zinc-400 uppercase tracking-widest italic">Thinking...</span>`;
+            thinking.className = "p-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 rounded-2xl flex gap-3 shadow-sm fade-in";
+            thinking.innerHTML = `<div class="w-6 h-6 rounded bg-accent/10 flex items-center justify-center text-accent text-[8px] italic shrink-0">⚡</div><div class="flex items-center gap-2"><span class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest thinking-pulse italic">CineMagic is thinking...</span></div>`;
             history.appendChild(thinking);
-            document.getElementById('workspace').scrollTop = document.getElementById('workspace').scrollHeight;
+            workspace.scrollTop = workspace.scrollHeight;
 
             try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ 'message': input, 'project_id': currentProjectId || '' })
-                });
+                const response = await fetch('/api/chat', { method: 'POST', body: new URLSearchParams({'message': input, 'project_id': currentProjectId || ''}) });
                 const data = await response.json();
-                currentProjectId = data.project_id; // Set project ID from response
-
-                thinking.classList.remove('animate-pulse');
-                thinking.innerHTML = `<div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner">⚡</div><div class="space-y-1"><p class="text-[10px] font-black text-accent uppercase tracking-widest">Architect Intel</p><p class="text-sm opacity-80 leading-relaxed font-medium text-left">${data.reply.replace(/\n/g, '<br>')}</p></div>`;
-                loadSidebarLibrary();
-            } catch (e) { thinking.innerHTML = `<p class="text-xs text-red-500 p-4">Sync Offline.</p>`; }
-            finally {
-                document.getElementById('sendBtn').disabled = false;
-                document.getElementById('workspace').scrollTop = document.getElementById('workspace').scrollHeight;
-            }
+                currentProjectId = data.project_id;
+                
+                thinking.className = "p-7 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[28px] flex gap-5 shadow-sm";
+                thinking.innerHTML = `<div class="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 shrink-0 italic shadow-inner">⚡</div><div class="space-y-1"><p class="text-[10px] font-black text-accent uppercase tracking-widest text-left">${data.role_identity}</p><p class="text-sm opacity-80 leading-relaxed font-medium text-left">${data.reply.replace(/\n/g, '<br>')}</p></div>`;
+                loadSidebar();
+            } catch (e) { thinking.innerHTML = `<p class="text-xs text-red-500 p-2 italic">Sync Offline.</p>`; }
+            finally { sendBtn.disabled = false; workspace.scrollTop = workspace.scrollHeight; }
         }
 
         function startVideo() {
-            const video = document.getElementById('videoPlayer');
-            video.src = "https://www.w3schools.com/html/mov_bbb.mp4";
+            const v = document.getElementById('videoPlayer');
+            v.src = "https://www.w3schools.com/html/mov_bbb.mp4";
             document.getElementById('poster').classList.add('hidden');
             document.getElementById('playBtn').classList.add('hidden');
-            video.classList.remove('hidden');
-            video.play();
+            v.classList.remove('hidden');
+            v.play();
         }
 
-        window.onload = () => {
-            loadSidebarLibrary();
-            document.getElementById('userInput').placeholder = "Ask CineMagic...";
-        };
+        window.onload = () => { loadSidebar(); };
     </script>
 </body>
 </html>
