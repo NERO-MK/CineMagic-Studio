@@ -25,6 +25,19 @@ html, body { height: 100dvh; overflow: hidden; margin: 0; }
 .hud-bar { height: 5px; @apply bg-slate-100 rounded-full overflow-hidden; }
 .hud-fill { height: 100%; @apply bg-blue-600; }
 
-.input-container { @apply rounded-[2rem] border border-slate-200; }
+/* Input Container: Dynamic Height Styling */
+.input-container { 
+    @apply rounded-[1.8rem] transition-shadow duration-300;
+}
+
+/* Note *: Textarea customization for better reading */
+#userInput {
+    line-height: 1.6;
+    min-height: 48px; /* စတင်ချိန်တွင် စာတစ်ကြောင်းစာ အမြင့် */
+}
+
+/* Custom scroll for the textarea if it exceeds max-height */
+#userInput::-webkit-scrollbar { width: 4px; }
+#userInput::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
 .native-btn { @apply flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-bold uppercase border border-slate-100 bg-slate-50 text-slate-500 active:scale-95 transition-all hover:bg-slate-100; }
