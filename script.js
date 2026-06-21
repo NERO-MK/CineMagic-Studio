@@ -15,10 +15,8 @@ function autoGrow(el) {
 }
 
 function handleVoiceUpload(input) {
-    if(input.files && input.files[0]) { selectedVoiceFile = input.files[0]; alert("Voice Sample Loaded for Cloning."); }
+    if(input.files && input.files[0]) { selectedVoiceFile = input.files[0]; alert("Voice Sample Loaded for Cloning Engine."); }
 }
-
-function toggleSettings() { document.getElementById('settingsModal').classList.toggle('hidden'); }
 
 async function handleSend() {
     const inputEl = document.getElementById('userInput');
@@ -31,13 +29,13 @@ async function handleSend() {
 
     const history = document.getElementById('chatHistory');
     const userMsg = document.createElement('div');
-    userMsg.className = "flex justify-end mb-8 animate-in fade-in";
-    userMsg.innerHTML = `<div class="bg-slate-900 text-white px-8 py-5 rounded-[2.5rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap">${input || "Cloning my voice..."}</div>`;
+    userMsg.className = "flex justify-end mb-10 animate-in fade-in";
+    userMsg.innerHTML = `<div class="bg-slate-900 text-white px-8 py-5 rounded-[2.5rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap">${input}</div>`;
     history.appendChild(userMsg);
 
     const thinking = document.createElement('div');
-    thinking.className = "flex gap-6 items-start animate-in fade-in mb-8";
-    thinking.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm italic text-[8px]">⚡</div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest animate-pulse mt-2.5 italic">Lead Producer is reasoning...</p>`;
+    thinking.className = "flex gap-6 items-start animate-in fade-in mb-10";
+    thinking.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm">⚡</div><p class="text-sm font-bold text-slate-400 uppercase tracking-widest animate-pulse mt-2.5 italic thinking-pulse text-left">Swarm Specialists are reasoning...</p>`;
     history.appendChild(thinking);
     document.getElementById('workspace').scrollTop = document.getElementById('workspace').scrollHeight;
 
@@ -51,9 +49,9 @@ async function handleSend() {
         const data = await response.json();
         currentProjectId = data.project_id;
         
-        thinking.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm text-[8px]">⚡</div><div class="space-y-2"><p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 italic text-left">${data.role_identity}</p><p class="text-sm opacity-90 leading-relaxed font-medium text-slate-800 text-left">${data.reply.replace(/\n/g, '<br>')}</p></div>`;
+        thinking.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm italic text-[8px]">⚡</div><div class="space-y-2"><p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 italic text-left">${data.role_identity}</p><p class="text-sm opacity-90 leading-relaxed font-medium text-slate-800 text-left">${data.reply.replace(/\n/g, '<br>')}</p></div>`;
         loadSidebarArchives();
-    } catch (e) { thinking.innerHTML = `<p class="text-xs text-red-500 p-2 text-left italic font-bold">SYSTEM OFFLINE.</p>`; }
+    } catch (e) { thinking.innerHTML = `<p class="text-xs text-red-500 p-2 text-left italic">Connection Offline.</p>`; }
     finally { sendBtn.disabled = false; document.getElementById('workspace').scrollTop = document.getElementById('workspace').scrollHeight; }
 }
 
@@ -62,34 +60,14 @@ async function loadSidebarArchives() {
         const response = await fetch('/api/projects');
         const projects = await response.json();
         const container = document.getElementById('sidebarLibrary');
-        if (projects && projects.length > 0) {
+        if (projects.length > 0) {
             container.innerHTML = projects.map(p => `
-                <div onclick="loadProjectHistory('${p.id}', '${p.title}')" class="flex flex-col gap-1 px-5 py-5 bg-slate-50 border border-slate-100 rounded-3xl cursor-pointer hover:border-primary transition-all text-left mb-3 shadow-sm group">
-                    <span class="text-[8px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-full w-max italic">${p.style || 'Movie'}</span>
+                <div onclick="alert('Load Session: ${p.title}')" class="flex flex-col gap-1 px-5 py-5 bg-slate-50 border border-slate-100 rounded-3xl cursor-pointer hover:border-primary transition-all text-left mb-3 shadow-sm group">
+                    <span class="text-[8px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-full w-max italic">Archive</span>
                     <p class="text-xs font-bold truncate text-slate-700">${p.title}</p>
                 </div>`).join('');
         }
     } catch (e) { console.log("DB sync offline"); }
-}
-
-async function loadProjectHistory(id, title) {
-    currentProjectId = id;
-    document.getElementById('movieTitle').innerText = title;
-    const history = document.getElementById('chatHistory');
-    history.innerHTML = '<p class="text-xs p-10 opacity-50 italic text-center animate-pulse tracking-widest uppercase">Restoring Production Intelligence...</p>';
-    if (window.innerWidth < 1024) toggleSidebar();
-    try {
-        const res = await fetch(`/api/chats/${id}`);
-        const chats = await res.json();
-        history.innerHTML = '';
-        chats.forEach(c => {
-            const bubble = document.createElement('div');
-            bubble.className = c.role === 'user' ? "flex justify-end mb-8" : "flex gap-6 items-start mb-8";
-            bubble.innerHTML = c.role === 'user' ? `<div class="bg-slate-900 text-white px-8 py-5 rounded-[2.5rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap">${c.content}</div>` : `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm italic">⚡</div><div class="space-y-2"><p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 italic text-left">${c.role_identity}</p><p class="text-sm opacity-90 leading-relaxed font-medium text-slate-800 text-left">${c.content.replace(/\n/g, '<br>')}</p></div>`;
-            history.appendChild(bubble);
-        });
-        document.getElementById('workspace').scrollTop = document.getElementById('workspace').scrollHeight;
-    } catch (e) { console.log(e); }
 }
 
 function startVideo() {
