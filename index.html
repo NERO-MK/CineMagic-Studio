@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en"> <!-- class="dark" ကို ဖယ်ထုတ်လိုက်ပါပြီ -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,140 +9,89 @@
     <link rel="stylesheet" href="style.css">
     <script>
         tailwind.config = { 
-            darkMode: 'class',
             theme: {
                 extend: {
-                    colors: { 
-                        primary: '#2563eb',
-                        obsidian: '#09090b',
-                        surfaceDark: '#18181b',
-                        surfaceLight: '#ffffff'
-                    }
+                    colors: { primary: '#2563eb', slateBg: '#f8fafc', cardBg: '#ffffff' }
                 }
             }
         }
     </script>
 </head>
-<body class="antialiased selection:bg-primary selection:text-white transition-colors duration-500">
+<body class="antialiased selection:bg-primary selection:text-white bg-slateBg text-slate-900">
 
-    <!-- Mobile Sidebar Overlay -->
-    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] hidden lg:hidden"></div>
-
-    <!-- Profile Modal -->
-    <div id="settingsModal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-        <div class="bg-white dark:bg-surfaceDark w-full max-w-md rounded-[2.5rem] border border-slate-200 dark:border-white/10 p-10 shadow-2xl transition-all">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-xl font-bold tracking-tight">Lead Producer Profile</h2>
-                <button onclick="toggleSettings()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="space-y-6">
-                <div class="flex items-center gap-5 p-6 bg-slate-50 dark:bg-white/5 rounded-3xl border border-slate-100 dark:border-white/5">
-                    <div class="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center font-bold text-white shadow-lg text-xl italic">A</div>
-                    <div>
-                        <p class="text-lg font-bold">Alex Thorne</p>
-                        <p class="text-xs text-slate-500 dark:text-zinc-400 uppercase tracking-widest font-semibold">Technical Director</p>
-                    </div>
-                </div>
-                <div class="p-6 border border-slate-100 dark:border-white/5 rounded-3xl space-y-4">
-                    <div class="flex justify-between items-center text-sm font-medium">
-                        <span class="text-slate-500">Current Plan</span>
-                        <span class="text-primary font-bold px-3 py-1 bg-primary/10 rounded-full text-xs">FREE TIER</span>
-                    </div>
-                </div>
-                <button class="w-full py-5 text-sm font-bold text-red-500 bg-red-500/5 hover:bg-red-500/10 rounded-3xl transition-all">Sign Out Master Session</button>
-            </div>
-        </div>
-    </div>
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[90] hidden lg:hidden"></div>
 
     <div class="main-wrapper">
         
-        <!-- Sidebar: Premium Theme-Matched -->
-        <aside id="sidebar" class="sidebar-closed">
+        <!-- Sidebar: Permanent Light Theme -->
+        <aside id="sidebar" class="sidebar-closed bg-white border-r border-slate-200 flex flex-col h-full z-[100] overflow-hidden fixed lg:static inset-y-0 left-0 shadow-xl lg:shadow-none">
             <div class="p-8 flex-1 overflow-y-auto custom-scroll flex flex-col">
-                <button onclick="location.reload()" class="w-full py-4 bg-primary text-white font-bold text-xs rounded-2xl mb-12 uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">+ New Production</button>
+                <button onclick="location.reload()" class="w-full py-4 bg-slate-900 text-white font-bold text-xs rounded-2xl mb-12 uppercase tracking-widest shadow-lg hover:opacity-90 active:scale-95 transition-all">+ New Production</button>
                 
                 <div class="space-y-10">
                     <div>
-                        <p class="text-[10px] font-black uppercase text-slate-400 dark:text-zinc-500 tracking-[0.2em] mb-5 px-2">Production Archive</p>
+                        <p class="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-5 px-2">Archives</p>
                         <div id="sidebarLibrary" class="space-y-2">
-                            <!-- Archives Load via JS -->
+                            <!-- Archives sync here -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar Bottom: HUD & Account -->
-            <div class="mt-auto border-t border-slate-200 dark:border-white/5 p-8 space-y-8">
+            <div class="mt-auto border-t border-slate-100 p-8 space-y-8 bg-slate-50/50">
                 <div class="space-y-5">
                     <div class="space-y-2">
-                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider">
-                            <span class="text-slate-500">Daily Limit</span>
+                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                            <span>Daily Limit</span>
                             <span class="text-primary">3 / 5</span>
                         </div>
                         <div class="hud-bar"><div class="hud-fill" style="width: 60%;"></div></div>
                     </div>
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider">
-                            <span class="text-slate-500">Token Sync</span>
-                            <span class="text-primary">1.2K / 5K</span>
-                        </div>
-                        <div class="hud-bar"><div class="hud-fill" style="width: 25%;"></div></div>
-                    </div>
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <div onclick="toggleSettings()" class="flex items-center gap-3 cursor-pointer group">
-                        <div class="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white flex items-center justify-center font-bold text-white dark:text-black shadow-md transition-transform group-hover:scale-105 italic">A</div>
+                    <div class="flex items-center gap-3 group overflow-hidden">
+                        <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center font-bold text-white shadow-md italic">A</div>
                         <div class="text-left">
-                            <p class="text-xs font-bold truncate tracking-tight">Alex Thorne</p>
-                            <p class="text-[9px] font-black text-primary uppercase tracking-tighter">Elite Member</p>
+                            <p class="text-xs font-bold truncate tracking-tight text-slate-800">Alex Thorne</p>
+                            <p class="text-[9px] font-black text-primary uppercase tracking-tighter italic">Lead Producer</p>
                         </div>
                     </div>
-                    <button onclick="toggleSettings()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-primary transition-all">
-                        <i class="fa-solid fa-gear text-sm"></i>
-                    </button>
+                    <i class="fa-solid fa-gear text-slate-300 text-sm"></i>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Viewport -->
+        <!-- Main Workspace -->
         <main class="viewport">
-            <header class="h-16 flex items-center justify-between px-8 border-b border-slate-200 dark:border-white/5 shrink-0 bg-white/50 dark:bg-obsidian/50 backdrop-blur-xl z-[80]">
+            <header class="h-16 flex items-center justify-between px-8 border-b border-slate-200 shrink-0 bg-white/70 backdrop-blur-xl z-30">
                 <div class="flex items-center gap-6">
-                    <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-primary transition-all shadow-sm">
+                    <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:text-primary transition-all">
                         <i class="fa-solid fa-bars-staggered text-lg"></i>
                     </button>
                     <div class="flex items-center gap-2">
-                        <span class="text-2xl filter drop-shadow-sm">⚡</span>
-                        <span class="text-sm font-black tracking-tighter uppercase">CineMagic <span class="text-slate-400 font-normal">/ Studio</span></span>
+                        <span class="text-2xl filter drop-shadow-sm text-slate-800">⚡</span>
+                        <span class="text-sm font-black tracking-tighter uppercase text-slate-800">CineMagic <span class="text-slate-400 font-normal">/ Studio</span></span>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-primary transition-all shadow-sm">
-                        <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
-                    </button>
+                    <span class="text-[9px] font-bold px-3 py-1 bg-primary/10 text-primary rounded-full border border-primary/20 uppercase tracking-widest italic">Hybrid Core 5.2</span>
                 </div>
             </header>
 
-            <!-- Monitor Section -->
             <div class="monitor-area p-4 md:p-8">
                 <div class="player-wrapper">
                     <div class="player-frame">
                         <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
                         <video id="videoPlayer" class="hidden w-full h-full" controls></video>
                         <div id="playBtn" onclick="startVideo()" class="video-play-btn cursor-pointer z-20">
-                            <div class="w-16 h-16 rounded-full bg-primary/20 border border-primary/40 text-white flex items-center justify-center text-xl backdrop-blur-md hover:scale-110 shadow-2xl transition-transform">
+                            <div class="w-16 h-16 rounded-full bg-primary/80 text-white flex items-center justify-center text-xl backdrop-blur-md hover:scale-110 shadow-2xl transition-transform">
                                 <i class="fa-solid fa-play ml-1"></i>
                             </div>
                         </div>
                     </div>
                     <div class="max-w-[550px] mx-auto mt-6 flex justify-between items-center gap-4 px-2">
-                        <div>
-                            <h1 id="movieTitle" class="text-sm font-bold tracking-tight uppercase opacity-90">Studio Monitor</h1>
-                            <p class="text-[9px] text-primary font-black uppercase tracking-[0.2em] mt-1 italic">Engine v5.1 Ready</p>
-                        </div>
+                        <h1 id="movieTitle" class="text-xs font-bold tracking-tight uppercase opacity-70">Monitor Standby</h1>
                         <div class="flex gap-2">
                             <button class="native-btn"><i class="fa-solid fa-download"></i></button>
                             <button class="native-btn"><i class="fa-solid fa-share-nodes"></i></button>
@@ -152,30 +101,29 @@
                 </div>
             </div>
 
-            <!-- Chat Scroll Area -->
             <div id="workspace" class="chat-scroll p-4 md:p-10 flex flex-col items-center">
-                <div id="chatHistory" class="w-full max-w-2xl space-y-10 pb-48 text-left">
+                <div id="chatHistory" class="w-full max-w-2xl space-y-10 pb-48 text-left text-slate-700">
                     <div class="flex gap-6 items-start">
                         <div class="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-xs italic shrink-0 border border-primary/20 shadow-sm">⚡</div>
                         <div class="space-y-2">
                             <p class="text-[10px] font-bold uppercase tracking-widest text-primary italic">Intelligence Core</p>
-                            <p class="text-sm opacity-80 leading-relaxed font-medium text-slate-800 dark:text-slate-100">Welcome Alex. I am the Lead Producer. Production environment is stable. Speak your vision.</p>
+                            <p class="text-sm leading-relaxed font-medium">Lead Producer online. Systems are optimal. Describe your vision to begin production.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Input Area: Fixed at Bottom -->
-            <div class="shrink-0 p-4 md:p-10 bg-gradient-to-t from-slate-50 dark:from-obsidian via-transparent to-transparent z-40">
+            <!-- Input Area -->
+            <div class="shrink-0 p-4 md:p-10 bg-gradient-to-t from-slate-50 via-slate-50 to-transparent z-40">
                 <div class="max-w-3xl mx-auto">
-                    <div class="input-container glass-card p-2 flex items-end shadow-2xl">
-                        <button onclick="alert('Module loading')" class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-primary transition-all"><i class="fa-solid fa-circle-plus text-xl"></i></button>
-                        <textarea id="userInput" rows="1" placeholder="Ask CineMagic..." class="flex-1 bg-transparent border-none outline-none text-sm p-3 resize-none max-h-40 font-medium text-slate-800 dark:text-slate-100"></textarea>
-                        <button id="sendBtn" onclick="handleSend()" class="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all m-1">
-                            <i id="sendIcon" class="fa-solid fa-arrow-up text-lg text-white"></i>
+                    <div class="input-container bg-white border border-slate-200 p-2 flex items-end shadow-xl">
+                        <button class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-primary transition-all"><i class="fa-solid fa-circle-plus text-xl"></i></button>
+                        <textarea id="userInput" rows="1" placeholder="Ask CineMagic..." class="flex-1 bg-transparent border-none outline-none text-sm p-3 resize-none max-h-40 font-medium text-slate-800"></textarea>
+                        <button id="sendBtn" onclick="handleSend()" class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all m-1">
+                            <i id="sendIcon" class="fa-solid fa-arrow-up text-lg"></i>
                         </button>
                     </div>
-                    <p class="text-[8px] text-center mt-4 text-slate-400 font-bold uppercase tracking-[0.4em]">Media Architecture Core 5.1</p>
+                    <p class="text-[8px] text-center mt-4 text-slate-400 font-bold uppercase tracking-[0.4em]">Media Architecture Core 5.2</p>
                 </div>
             </div>
         </main>
