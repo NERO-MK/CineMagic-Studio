@@ -2,16 +2,8 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/api/chat",
-      "destination": "https://cinemagic-engine-production.up.railway.app/api/chat"
-    },
-    {
-      "source": "/api/projects",
-      "destination": "https://cinemagic-engine-production.up.railway.app/api/projects"
-    },
-    {
-      "source": "/api/chats/:id",
-      "destination": "https://cinemagic-engine-production.up.railway.app/api/chats/:id"
+      "source": "/api/(.*)",
+      "destination": "https://cinemagic-engine-production.up.railway.app/api/$1"
     }
   ]
 }
