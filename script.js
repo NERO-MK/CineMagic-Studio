@@ -1,4 +1,9 @@
+/**
+ * CineMagic Studio v64 - Final Master Logic
+ */
+
 let currentProjectId = null;
+let currentTokens = 15000; // Default initial point for demo
 
 function toggleSidebar() {
     const sb = document.getElementById('sidebar');
@@ -13,8 +18,11 @@ function autoGrow(el) {
     else { el.style.height = (el.scrollHeight) + "px"; el.style.overflowY = "hidden"; }
 }
 
-function handleMediaUpload(input) {
-    if(input.files.length > 0) alert(`${input.files.length} files selected. Initializing cloud ingestion.`);
+// --- Note *: DYNAMIC TOKEN DISPLAY LOGIC ---
+function updateTokenHUD(amount) {
+    currentTokens = amount;
+    // Format number with commas for elite look (e.g., 14,783)
+    document.getElementById('tokenTrack').innerText = amount.toLocaleString() + " Tokens";
 }
 
 async function handleSend() {
@@ -27,27 +35,26 @@ async function handleSend() {
     const history = document.getElementById('chatHistory');
     const workspace = document.getElementById('workspace');
 
-    // 1. Lock UI & Disable Send Button
+    // 1. LOCK UI & DISABLE SEND
     inputEl.value = '';
     inputEl.style.height = "48px";
     sendBtn.disabled = true;
+    sendBtn.style.opacity = "0.5";
     sendIcon.className = "fa-solid fa-circle-notch animate-spin";
 
-    // 2. Append User Message
+    // User Message (White Style)
     const userMsg = document.createElement('div');
     userMsg.className = "flex justify-end mb-10 animate-in fade-in";
-    userMsg.innerHTML = `<div class="user-msg">${input}</div>`;
+    userMsg.innerHTML = `<div class="user-bubble">${input}</div>`;
     history.appendChild(userMsg);
     workspace.scrollTop = workspace.scrollHeight;
 
-    // 3. Append Thinking State
+    // AI Thinking State
     const thinking = document.createElement('div');
     thinking.className = "flex gap-6 items-start animate-in fade-in mb-10";
     thinking.innerHTML = `
         <div class="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white text-xs shrink-0 shadow-lg italic">⚡</div>
-        <div class="space-y-3 mt-2.5">
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest thinking-pulse">Intelligence Core is reasoning...</p>
-        </div>`;
+        <p class="text-sm font-bold text-slate-400 uppercase tracking-widest thinking-pulse mt-2.5 italic">Reasoning...</p>`;
     history.appendChild(thinking);
     workspace.scrollTop = workspace.scrollHeight;
 
@@ -59,30 +66,24 @@ async function handleSend() {
         const data = await response.json();
         currentProjectId = data.project_id;
         
-        // 4. Final Response
+        // --- Note *: Update Token Balance from AI Response ---
+        if(data.tokens_remaining) updateTokenHUD(data.tokens_remaining);
+
         thinking.innerHTML = `
             <div class="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white text-xs shrink-0 shadow-lg italic">⚡</div>
             <div class="space-y-4">
-                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 italic text-left">CineMagic Response</p>
-                <div class="text-sm opacity-90 leading-relaxed font-medium text-slate-800 text-left">${data.reply.replace(/\n/g, '<br>')}</div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 italic">CineMagic Response</p>
+                <p class="text-sm opacity-90 leading-relaxed font-medium text-slate-800 text-left">${data.reply.replace(/\n/g, '<br>')}</p>
             </div>`;
     } catch (e) {
-        thinking.innerHTML = `<p class="text-xs text-red-500 p-2 italic">Connection Offline.</p>`;
+        thinking.innerHTML = `<p class="text-xs text-red-500 p-2 text-left italic">Connection Offline.</p>`;
     } finally {
-        // 5. Unlock UI & Re-enable Button
         sendBtn.disabled = false;
+        sendBtn.style.opacity = "1";
         sendIcon.className = "fa-solid fa-arrow-up";
         workspace.scrollTop = workspace.scrollHeight;
     }
 }
 
-function startVideo() {
-    const v = document.getElementById('videoPlayer');
-    v.src = "https://www.w3schools.com/html/mov_bbb.mp4";
-    document.getElementById('poster').classList.add('hidden');
-    document.getElementById('playBtn').classList.add('hidden');
-    v.classList.remove('hidden');
-    v.play();
-}
-
-window.onload = () => { /* Load Archives... */ };
+// Initial Sync
+window.onload = () => { updateTokenHUD(); };
