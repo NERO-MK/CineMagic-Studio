@@ -1,23 +1,34 @@
-/* Note *: Global Standard Production Styles */
+/* CineMagic Master CSS v13.0 */
+:root { --obsidian: #09090b; --primary: #2563eb; }
+
 html, body { height: 100dvh; overflow: hidden; margin: 0; }
 .main-wrapper { height: 100dvh; display: flex; flex-direction: row; width: 100%; position: relative; }
 .viewport { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100%; position: relative; }
 
-#sidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s ease; width: 280px; min-width: 280px; }
+/* Sidebar Logic */
+#sidebar { 
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s ease;
+    width: 280px; min-width: 280px; @apply flex flex-col h-full z-[1000] border-r border-slate-200 bg-white shadow-2xl;
+}
 #sidebar.sidebar-closed { transform: translateX(-100%); width: 0 !important; min-width: 0 !important; }
 
+/* Monitor HUD */
+.monitor-area { flex-shrink: 0; z-index: 50; }
 .player-frame { position: relative; aspect-ratio: 16/9; @apply bg-black rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-2xl; }
 .video-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
+/* Chat Area */
 .chat-scroll { flex-grow: 1; overflow-y: auto; scroll-behavior: smooth; }
 .chat-scroll::-webkit-scrollbar { width: 4px; }
 .chat-scroll::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
+/* HUD Progress */
 .hud-bar { height: 5px; @apply bg-slate-100 rounded-full overflow-hidden; }
 .hud-fill { height: 100%; @apply bg-blue-600; }
 
-.input-container { @apply rounded-[2.5rem]; }
-.tool-btn-v10 { @apply w-10 h-10 bg-black/60 backdrop-blur-md text-white border border-white/20 rounded-2xl flex items-center justify-center text-sm transition-all hover:bg-primary active:scale-90 shadow-xl; }
+/* Directorial UI Elements */
+.input-container-pill { @apply rounded-[2.5rem]; }
+.tool-btn-pro { @apply w-10 h-10 bg-black/60 backdrop-blur-md text-white border border-white/20 rounded-2xl flex items-center justify-center text-sm transition-all hover:bg-primary active:scale-90 shadow-xl; }
 .dropdown-item { @apply flex items-center gap-3 w-full px-5 py-4 text-[10px] font-bold uppercase text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-all text-left border-b border-slate-50 last:border-none; }
 
 .native-btn { @apply flex items-center gap-1.5 px-4 py-2 rounded-xl text-[9px] font-bold uppercase border border-slate-100 bg-slate-50 text-slate-400 active:scale-95 transition-all hover:bg-slate-100; }
