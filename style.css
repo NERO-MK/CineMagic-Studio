@@ -1,29 +1,38 @@
-/* Note *: Platinum Minimalist Styling */
+/* Note *: Global Standard Typography and Pill Layout */
 html, body { height: 100dvh; overflow: hidden; margin: 0; }
 .main-wrapper { height: 100dvh; display: flex; flex-direction: column; width: 100%; position: relative; }
 
-#sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease; width: 280px; min-width: 280px; }
+/* Sidebar Logic */
+#sidebar { 
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s ease;
+    width: 280px; min-width: 280px;
+}
 #sidebar.sidebar-closed { transform: translateX(-100%); width: 0 !important; min-width: 0 !important; }
 
-/* Monitor & Player frame */
-.player-frame { position: relative; aspect-ratio: 16/9; @apply bg-black rounded-[2rem] overflow-hidden border border-slate-200 shadow-2xl; }
+/* Monitor & Player */
+.player-frame { position: relative; aspect-ratio: 16/9; @apply bg-black rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-2xl; }
 .video-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-/* Action Icon Buttons Under Player */
-.action-icon-btn { @apply w-8 h-8 flex items-center justify-center rounded-lg bg-slate-50 border border-slate-100 text-sm transition-all hover:bg-white hover:shadow-md active:scale-90; }
+/* Action Buttons: Neutral Platinum Theme */
+.action-btn { 
+    @apply w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-600 transition-all hover:bg-white hover:shadow-lg hover:text-blue-600 active:scale-90;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
 
-/* Note *: Rounded Pill-Shaped Input */
-.input-container-v61 { @apply rounded-[2.5rem]; }
+/* Chat Input: High-Rounded Pill */
+.input-container-pill { 
+    @apply rounded-[3rem]; 
+}
 
-.chat-scroll { flex-grow: 1; overflow-y: auto; scroll-behavior: smooth; }
+/* Scroll Area */
 .chat-scroll::-webkit-scrollbar { width: 4px; }
 .chat-scroll::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
-.tool-btn-v61 { @apply w-10 h-10 bg-black/50 backdrop-blur-md text-white border border-white/20 rounded-xl flex items-center justify-center text-sm transition-all hover:bg-primary; }
+/* Thinking Animation */
 .thinking-pulse { animation: pulseFade 1.5s infinite; }
 @keyframes pulseFade { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-/* User Bubbles - Modern White Style */
-.user-msg-bubble { 
+/* User Bubbles */
+.user-msg { 
     @apply bg-white border border-slate-200 text-slate-800 px-8 py-5 rounded-[2.5rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap leading-relaxed;
 }
