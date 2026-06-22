@@ -3,60 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineMagic AI Studio</title>
+    <title>CineMagic | Master Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script>tailwind.config = { theme: { extend: { colors: { primary: '#2563eb', slateBg: '#f8fafc' } } } }</script>
 </head>
-<body class="antialiased bg-slateBg text-slate-900">
+<body class="antialiased bg-slateBg text-slate-900 overflow-hidden">
 
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[90] hidden"></div>
 
     <div class="main-wrapper flex flex-col h-screen overflow-hidden">
         
-        <!-- Header: Center Logo & HUD -->
-        <header class="h-16 flex items-center justify-between px-6 border-b border-slate-200 bg-white/80 backdrop-blur-xl z-[100] shrink-0">
+        <!-- Header: Branding Left, Tokens Right -->
+        <header class="h-16 flex items-center justify-between px-6 border-b border-slate-200 bg-white/70 backdrop-blur-xl z-[100] shrink-0">
             <div class="flex items-center gap-4">
                 <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:text-primary transition-all">
                     <i class="fa-solid fa-bars-staggered text-lg"></i>
                 </button>
-                <!-- HUD: Token Track & Status -->
-                <div class="hidden sm:flex flex-col text-left">
-                    <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">CineMagic Credit</p>
-                    <div class="flex items-center gap-2">
-                        <span id="tokenTrack" class="text-[11px] font-bold text-primary">850 Points</span>
-                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                        <span class="text-[9px] font-bold text-green-600 uppercase italic">Studio Active</span>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">⚡</span>
+                    <span class="text-sm font-black tracking-tighter uppercase">CineMagic <span class="text-slate-400 font-normal">/ AI Studio</span></span>
                 </div>
             </div>
 
-            <!-- Note *: Center Logo & Branding -->
-            <div class="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
-                <span class="text-2xl">⚡</span>
-                <span class="text-sm font-black tracking-tighter uppercase text-slate-800">CineMagic <span class="text-slate-400 font-normal">/ AI Studio</span></span>
+            <!-- Token Track HUD (Top Right) -->
+            <div class="flex flex-col text-right">
+                <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest leading-none">Studio Credits</p>
+                <div class="flex items-center gap-2 justify-end">
+                    <span id="tokenTrack" class="text-[11px] font-bold text-primary">850 Points</span>
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                </div>
             </div>
-
-            <!-- Top Right: New Campaign -->
-            <button onclick="location.reload()" class="px-4 py-2 bg-slate-900 text-white font-bold text-[10px] rounded-xl uppercase tracking-widest shadow-lg active:scale-95 transition-all">
-                + New Project
-            </button>
         </header>
 
         <div class="flex flex-1 overflow-hidden">
             <!-- Sidebar -->
             <aside id="sidebar" class="sidebar-closed bg-white border-r border-slate-200 flex flex-col h-full z-[100] overflow-hidden fixed lg:static inset-y-0 left-0">
-                <div class="p-6 flex-1 overflow-y-auto custom-scroll text-left">
-                    <p class="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-5 px-2 italic underline">Archives</p>
+                <div class="p-8 flex-1 overflow-y-auto custom-scroll text-left">
+                    <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-6 underline italic">Archives</p>
                     <div id="sidebarLibrary" class="space-y-1"></div>
                 </div>
-                <!-- Profile & FAQ Link at bottom -->
-                <div class="mt-auto p-6 border-t border-slate-100 space-y-4">
-                    <button onclick="showFAQ()" class="w-full py-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all text-center">Studio FAQ & Guide</button>
+                <!-- Profile Bottom -->
+                <div class="mt-auto p-8 border-t border-slate-100">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center font-bold text-white shadow-md italic text-xs shrink-0">A</div>
-                        <div class="text-left overflow-hidden"><p class="text-[11px] font-bold truncate">Alex Thorne</p></div>
+                        <div class="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center font-bold text-white shadow-md text-xs italic shrink-0">A</div>
+                        <p class="text-[11px] font-bold truncate">Alex Thorne</p>
                     </div>
                 </div>
             </aside>
@@ -66,71 +58,61 @@
                 
                 <!-- Monitor Section -->
                 <div class="monitor-area p-4 md:p-6 shrink-0 border-b border-slate-100 bg-white">
-                    <div class="player-wrapper max-w-2xl mx-auto relative group">
-                        <div class="player-frame">
+                    <div class="player-wrapper max-w-2xl mx-auto">
+                        <div class="player-frame relative group">
                             <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
                             <video id="videoPlayer" class="hidden w-full h-full" controls></video>
                             
-                            <!-- Editor Tools Overlay -->
+                            <!-- VFX Tools Overlay -->
                             <div class="absolute top-4 right-4 flex flex-col gap-2 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button class="tool-btn-v60"><i class="fa-solid fa-scissors"></i></button>
-                                <button class="tool-btn-v60"><i class="fa-solid fa-closed-captioning"></i></button>
-                                <button class="tool-btn-v60"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                                <button class="tool-btn-v61"><i class="fa-solid fa-scissors"></i></button>
+                                <button class="tool-btn-v61"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
                             </div>
 
                             <div id="playBtn" onclick="startVideo()" class="video-play-btn cursor-pointer z-20">
-                                <div class="w-14 h-14 rounded-full bg-primary/80 text-white flex items-center justify-center text-xl backdrop-blur-md shadow-2xl transition-transform hover:scale-110"><i class="fa-solid fa-play ml-1"></i></div>
+                                <div class="w-16 h-16 rounded-full bg-primary/80 text-white flex items-center justify-center text-xl shadow-2xl hover:scale-110 transition-transform"><i class="fa-solid fa-play ml-1"></i></div>
                             </div>
                         </div>
 
-                        <!-- Pro Action Bar -->
-                        <div class="mt-4 flex justify-between items-center gap-4 px-1">
-                            <h1 id="movieTitle" class="text-xs font-bold uppercase opacity-60">Monitor: Standby</h1>
-                            <div class="relative group" id="exportContainer">
-                                <button onclick="toggleActionMenu()" class="flex items-center gap-2 px-5 py-2 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-primary transition-all">
-                                    Export <i class="fa-solid fa-chevron-down text-[8px]"></i>
-                                </button>
-                                <div id="actionMenu" class="hidden absolute right-0 mt-3 w-52 bg-white border border-slate-200 rounded-[1.5rem] shadow-2xl z-[110] overflow-hidden">
-                                    <button class="dropdown-item"><i class="fa-solid fa-download w-4"></i> Download</button>
-                                    <button class="dropdown-item"><i class="fa-brands fa-telegram w-4 text-blue-500"></i> Telegram</button>
-                                    <button class="dropdown-item"><i class="fa-brands fa-tiktok w-4"></i> TikTok</button>
-                                    <button class="dropdown-item"><i class="fa-brands fa-facebook w-4 text-blue-600"></i> Facebook</button>
-                                    <button class="dropdown-item"><i class="fa-brands fa-youtube w-4 text-red-600"></i> YouTube</button>
-                                </div>
+                        <!-- Production Action Bar (Native Style Icons) -->
+                        <div class="mt-5 flex justify-between items-center px-1">
+                            <h1 id="movieTitle" class="text-xs font-bold uppercase opacity-60 tracking-widest">Monitor Standby</h1>
+                            <div class="flex items-center gap-3">
+                                <button class="action-icon-btn" title="Download"><i class="fa-solid fa-download"></i></button>
+                                <div class="h-4 w-[1px] bg-slate-200 mx-1"></div>
+                                <button class="action-icon-btn text-blue-500" title="Facebook"><i class="fa-brands fa-facebook"></i></button>
+                                <button class="action-icon-btn text-red-600" title="YouTube"><i class="fa-brands fa-youtube"></i></button>
+                                <button class="action-icon-btn text-black" title="TikTok"><i class="fa-brands fa-tiktok"></i></button>
+                                <button class="action-icon-btn text-sky-500" title="Telegram"><i class="fa-brands fa-telegram"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Chat Workspace -->
-                <div id="workspace" class="chat-scroll flex-1 p-4 md:p-10 flex flex-col items-center">
-                    <div id="chatHistory" class="w-full max-w-2xl space-y-10 pb-48 text-left text-slate-700">
-                        <div class="flex gap-6 items-start">
+                <div id="workspace" class="chat-scroll flex-1 p-4 md:p-10">
+                    <div id="chatHistory" class="max-w-2xl mx-auto space-y-10 pb-48 text-left text-slate-700">
+                        <div class="flex gap-6 items-start animate-in fade-in">
                             <div class="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center text-white text-xs shrink-0 shadow-lg">⚡</div>
-                            <div class="space-y-1">
-                                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 italic">CineMagic Intelligence</p>
-                                <p class="text-sm leading-relaxed font-medium">Hello Alex. I am ready to architect your production. Please provide a source link or a detailed script.</p>
-                            </div>
+                            <p class="text-sm leading-relaxed font-medium">Hello Alex. Production studio is live. Please provide your vision or media source.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Input Hub -->
+                <!-- Input Hub: Pill Shape Fixed -->
                 <div class="shrink-0 p-4 md:p-10 bg-gradient-to-t from-slate-50 via-slate-50 to-transparent z-40">
                     <div class="max-w-3xl mx-auto">
-                        <div class="input-container-pill bg-white border border-slate-200 p-1.5 flex items-end shadow-2xl focus-within:border-primary/50 transition-all">
-                            <!-- Note *: File & Voice Trigger -->
-                            <button onclick="document.getElementById('fileUpload').click()" class="w-11 h-11 flex items-center justify-center text-slate-400 hover:text-primary shrink-0 transition-all mb-0.5"><i class="fa-solid fa-circle-plus text-xl"></i></button>
-                            <input type="file" id="fileUpload" class="hidden" multiple onchange="handleFileUpload(this)">
+                        <div class="input-container-v61 bg-white border border-slate-200 p-1.5 flex items-end shadow-2xl focus-within:border-primary/50 transition-all">
                             
-                            <button id="micBtn" onclick="toggleVoice()" class="w-11 h-11 flex items-center justify-center text-slate-400 hover:text-primary shrink-0 transition-all mb-0.5"><i class="fa-solid fa-microphone text-lg"></i></button>
+                            <!-- Media Upload (Files, Photos, Audio, Video) -->
+                            <button onclick="document.getElementById('mediaUpload').click()" class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-primary mb-0.5 shrink-0 transition-all"><i class="fa-solid fa-circle-plus text-xl"></i></button>
+                            <input type="file" id="mediaUpload" class="hidden" multiple accept="image/*,video/*,audio/*,.pdf,.srt,.json" onchange="handleMediaUpload(this)">
                             
-                            <textarea id="userInput" rows="1" placeholder="Describe vision or paste link..." 
-                                      class="flex-1 bg-transparent border-none outline-none text-[15px] p-3 resize-none overflow-y-auto max-h-[120px] font-medium text-slate-800 leading-relaxed" 
+                            <textarea id="userInput" rows="1" placeholder="Ask CineMagic..." 
+                                      class="flex-1 bg-transparent border-none outline-none text-[15px] p-3 resize-none overflow-y-auto max-h-[120px] font-medium text-slate-800 leading-relaxed custom-scroll" 
                                       oninput="autoGrow(this)"></textarea>
 
                             <button id="sendBtn" onclick="handleSend()" class="w-11 h-11 bg-slate-900 text-white rounded-full flex items-center justify-center m-1 shrink-0 shadow-lg active:scale-95 transition-all">
-                                <i id="sendIcon" class="fa-solid fa-arrow-up"></i>
+                                <i id="sendIcon" class="fa-solid fa-arrow-up text-lg text-white"></i>
                             </button>
                         </div>
                     </div>
