@@ -1,38 +1,30 @@
-/* Note *: Global Standard Typography and Pill Layout */
+/* Note *: Fixed Floating Pill Input and Centered Elements */
 html, body { height: 100dvh; overflow: hidden; margin: 0; }
 .main-wrapper { height: 100dvh; display: flex; flex-direction: column; width: 100%; position: relative; }
 
-/* Sidebar Logic */
-#sidebar { 
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s ease;
-    width: 280px; min-width: 280px;
-}
+#sidebar { transition: transform 0.4s ease, width 0.4s ease; width: 280px; min-width: 280px; }
 #sidebar.sidebar-closed { transform: translateX(-100%); width: 0 !important; min-width: 0 !important; }
 
-/* Monitor & Player */
+/* Video Precision */
 .player-frame { position: relative; aspect-ratio: 16/9; @apply bg-black rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-2xl; }
-.video-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.video-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 30; }
 
-/* Action Buttons: Neutral Platinum Theme */
-.action-btn { 
-    @apply w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-600 transition-all hover:bg-white hover:shadow-lg hover:text-blue-600 active:scale-90;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+/* Pill Shaped Input Box Fix */
+.pill-input-container { 
+    @apply rounded-[3rem] shadow-xl; /* strictly rounded ends */
 }
 
-/* Chat Input: High-Rounded Pill */
-.input-container-pill { 
-    @apply rounded-[3rem]; 
+/* Neutral Action Icons under player */
+.native-action-btn { 
+    @apply w-9 h-9 flex items-center justify-center rounded-lg bg-slate-50 border border-slate-100 text-slate-500 transition-all hover:bg-white hover:shadow-md active:scale-90; 
 }
 
-/* Scroll Area */
+.tool-icon { @apply w-10 h-10 bg-black/60 backdrop-blur-md text-white border border-white/20 rounded-2xl flex items-center justify-center text-sm transition-all hover:bg-primary active:scale-90 shadow-xl; }
+
 .chat-scroll::-webkit-scrollbar { width: 4px; }
 .chat-scroll::-webkit-scrollbar-thumb { @apply bg-slate-200 rounded-full; }
 
-/* Thinking Animation */
+.user-bubble { @apply bg-white border border-slate-200 text-slate-800 px-8 py-5 rounded-[2.5rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap leading-relaxed; }
+
 .thinking-pulse { animation: pulseFade 1.5s infinite; }
 @keyframes pulseFade { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-/* User Bubbles */
-.user-msg { 
-    @apply bg-white border border-slate-200 text-slate-800 px-8 py-5 rounded-[2.5rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap leading-relaxed;
-}
