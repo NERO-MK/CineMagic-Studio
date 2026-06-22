@@ -1,3 +1,4 @@
+/* Note *: Global Standard Production Styles */
 html, body { height: 100dvh; overflow: hidden; margin: 0; }
 .main-wrapper { height: 100dvh; display: flex; flex-direction: row; width: 100%; position: relative; }
 .viewport { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100%; position: relative; }
@@ -16,8 +17,9 @@ html, body { height: 100dvh; overflow: hidden; margin: 0; }
 .hud-fill { height: 100%; @apply bg-blue-600; }
 
 .input-container { @apply rounded-[2.5rem]; }
+.tool-btn-v10 { @apply w-10 h-10 bg-black/60 backdrop-blur-md text-white border border-white/20 rounded-2xl flex items-center justify-center text-sm transition-all hover:bg-primary active:scale-90 shadow-xl; }
 .dropdown-item { @apply flex items-center gap-3 w-full px-5 py-4 text-[10px] font-bold uppercase text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-all text-left border-b border-slate-50 last:border-none; }
 
-.native-btn { @apply flex items-center gap-1.5 px-4 py-2 rounded-xl text-[9px] font-bold uppercase border border-slate-100 bg-slate-50 text-slate-500 active:scale-95 transition-all hover:bg-slate-100; }
+.native-btn { @apply flex items-center gap-1.5 px-4 py-2 rounded-xl text-[9px] font-bold uppercase border border-slate-100 bg-slate-50 text-slate-400 active:scale-95 transition-all hover:bg-slate-100; }
 .thinking-pulse { animation: pulseFade 1.5s infinite; }
 @keyframes pulseFade { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
