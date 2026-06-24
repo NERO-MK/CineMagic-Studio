@@ -3,106 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineMagic | Lead Producer Studio</title>
+    <title>CineMagic | AI Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script>tailwind.config = { theme: { extend: { colors: { primary: '#2563eb', slateBg: '#f8fafc' } } } }</script>
-</head>
-<body class="antialiased bg-slateBg text-slate-900 overflow-hidden font-sans text-left">
-
-    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/10 backdrop-blur-sm z-[90] hidden lg:hidden"></div>
-
-    <div class="main-wrapper flex flex-col h-screen w-full overflow-hidden">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
         
-        <!-- Header -->
-        <header class="h-16 flex items-center justify-between px-6 border-b border-slate-200 bg-white/80 backdrop-blur-xl z-[100] shrink-0">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-600 transition-all">
-                    <i class="fa-solid fa-bars-staggered text-lg"></i>
-                </button>
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">⚡</span>
-                    <span class="text-sm font-black tracking-tighter uppercase text-slate-800 leading-none">CineMagic <br><span class="text-slate-400 font-normal text-[9px]">AI STUDIO</span></span>
-                </div>
-            </div>
+        /* Layout Fix for 100dvh (Keyboard Proof) */
+        html, body { height: 100dvh; margin: 0; padding: 0; overflow: hidden; background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .main-wrapper { display: flex; flex-direction: column; height: 100dvh; width: 100%; position: relative; }
+        
+        /* Header */
+        .studio-header { height: 64px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid #e2e8f0; z-index: 50; }
+        
+        /* Monitor Section */
+        .monitor-section { flex-shrink: 0; background: white; border-bottom: 1px solid #e2e8f0; padding: 16px; z-index: 40; }
+        .player-frame { position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 500px; margin: 0 auto; background: #000; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        
+        /* Play Button STRICT Centering */
+        .play-btn-centered { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 30; }
 
-            <!-- Token Usage HUD (Right) -->
-            <div class="flex flex-col text-right">
-                <p class="text-[8px] font-black uppercase text-slate-400 tracking-[0.2em] mb-1">Active Intelligence</p>
-                <div class="flex items-center gap-2 justify-end">
-                    <span id="tokenDisplay" class="text-[12px] font-bold text-slate-800 tracking-tight">24,783 Tokens</span>
-                    <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></div>
+        /* Chat Scroll Area */
+        .chat-area { flex: 1; overflow-y: auto; padding: 24px; scroll-behavior: smooth; }
+        .chat-area::-webkit-scrollbar { width: 3px; }
+        .chat-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Note *: Floating Pill Input (The Fix) */
+        .footer-input-hub { flex-shrink: 0; padding: 16px; background: transparent; z-index: 50; }
+        .pill-container { 
+            display: flex; align-items: flex-end; gap: 8px; background: white; 
+            border: 1px solid #e2e8f0; border-radius: 32px; padding: 6px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08); transition: all 0.3s ease;
+            max-width: 768px; margin: 0 auto;
+        }
+        .pill-container:focus-within { border-color: #2563eb; ring: 4px rgba(37, 99, 235, 0.1); }
+
+        textarea { flex: 1; background: transparent; border: none; outline: none; padding: 10px 16px; font-size: 15px; resize: none; max-height: 120px; color: #1e293b; font-weight: 500; }
+        
+        .sidebar { position: fixed; top: 0; left: 0; height: 100dvh; width: 280px; background: white; border-right: 1px solid #e2e8f0; z-index: 100; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        .sidebar.open { transform: translateX(0); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Mobile Overlay -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 z-[90] hidden"></div>
+
+    <div class="main-wrapper">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar shadow-2xl">
+            <div class="p-6 flex-1 overflow-y-auto">
+                <button onclick="location.reload()" class="w-full py-3 bg-zinc-900 text-white font-bold text-[10px] rounded-xl mb-8 uppercase tracking-widest">+ New Production</button>
+                <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">Library</p>
+                <div id="sidebarLibrary" class="space-y-2"></div>
+            </div>
+            <div class="p-8 border-t border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-zinc-900 flex items-center justify-center font-bold text-white italic text-xs">A</div>
+                    <p class="text-[11px] font-bold uppercase truncate">Alex Thorne</p>
                 </div>
+                <i class="fa-solid fa-gear text-slate-300 text-sm"></i>
+            </div>
+        </aside>
+
+        <!-- Header -->
+        <header class="studio-header">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100"><i class="fa-solid fa-bars-staggered text-lg"></i></button>
+                <span class="text-sm font-black uppercase italic tracking-tighter">⚡ CineMagic Studio</span>
+            </div>
+            <div class="flex flex-col text-right">
+                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Active Model</p>
+                <span id="modelHud" class="text-[11px] font-bold text-blue-600">Gemini 1.5</span>
             </div>
         </header>
 
-        <div class="flex flex-1 overflow-hidden">
-            <!-- Sidebar -->
-            <aside id="sidebar" class="sidebar-closed bg-white border-r border-slate-200 flex flex-col h-full z-[100] overflow-hidden fixed lg:static inset-y-0 left-0 shadow-2xl lg:shadow-none">
-                <div class="p-8 flex-1 overflow-y-auto custom-scroll flex flex-col text-left">
-                    <button onclick="location.reload()" class="w-full py-4 bg-slate-900 text-white font-bold text-xs rounded-2xl mb-8 uppercase tracking-widest shadow-lg active:scale-95 transition-all">+ New Production</button>
-                    <nav>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 px-2 italic underline">Archives</p>
-                        <div id="sidebarLibrary" class="space-y-1"></div>
-                    </nav>
-                </div>
-                <div class="mt-auto p-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                    <div onclick="toggleSettings()" class="flex items-center gap-3 cursor-pointer group flex-1 overflow-hidden">
-                        <div class="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center font-bold text-white shadow-md italic text-xs shrink-0">A</div>
-                        <div class="text-left overflow-hidden"><p class="text-[10px] font-black uppercase truncate text-zinc-800">Alex Thorne</p></div>
-                    </div>
-                    <i class="fa-solid fa-gear text-slate-300 text-sm cursor-pointer hover:text-primary" onclick="toggleSettings()"></i>
-                </div>
-            </aside>
-
-            <main class="viewport flex-1 flex flex-col relative overflow-hidden">
-                <!-- Monitor -->
-                <div class="monitor-fixed p-4 md:p-6 shrink-0 bg-white border-b border-slate-100 shadow-sm z-30">
-                    <div class="player-wrapper max-w-2xl mx-auto">
-                        <div class="player-frame relative group">
-                            <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
-                            <video id="videoPlayer" class="hidden w-full h-full" controls></video>
-                            <div id="playBtn" onclick="startVideo()" class="video-play-btn cursor-pointer z-20">
-                                <div class="w-14 h-14 rounded-full bg-slate-900/80 text-white flex items-center justify-center text-xl backdrop-blur-md shadow-2xl transition-transform hover:scale-110"><i class="fa-solid fa-play ml-1"></i></div>
-                            </div>
-                        </div>
-                        <div class="mt-6 flex justify-between items-center px-1">
-                            <h1 id="movieTitle" class="text-xs font-bold uppercase opacity-60 italic">Monitor Standby</h1>
-                            <div class="flex items-center gap-3">
-                                <button class="native-btn" title="Download"><i class="fa-solid fa-download"></i></button>
-                                <button class="native-btn" title="Share"><i class="fa-solid fa-share-nodes"></i></button>
-                                <button class="native-btn" title="Cloud Upload"><i class="fa-solid fa-cloud-arrow-up"></i></button>
-                            </div>
-                        </div>
+        <!-- Fixed Monitor -->
+        <div class="monitor-section">
+            <div class="player-frame group">
+                <img id="poster" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1600&auto=format&fit=crop" class="w-full h-full object-cover opacity-60">
+                <video id="videoPlayer" class="hidden w-full h-full" controls></video>
+                <div id="playBtn" onclick="startVideo()" class="play-btn-centered cursor-pointer">
+                    <div class="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl shadow-2xl hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-play ml-1"></i>
                     </div>
                 </div>
-
-                <div id="workspace" class="chat-scroll flex-1 p-4 md:p-10 overflow-y-auto">
-                    <div id="chatHistory" class="max-w-2xl mx-auto space-y-12 pb-48 text-zinc-800">
-                        <div class="flex gap-6 items-start animate-in fade-in">
-                            <div class="w-8 h-8 rounded bg-zinc-200 flex items-center justify-center text-[10px] font-bold text-zinc-500 shrink-0 italic">⚡</div>
-                            <p class="text-sm opacity-80 leading-relaxed font-medium">Hello Alex. Production studio is live. How shall we architect your cinematic vision?</p>
-                        </div>
-                    </div>
+            </div>
+            <div class="max-w-[500px] mx-auto mt-4 flex justify-between items-center gap-4 px-1">
+                <h1 class="text-[10px] font-bold uppercase opacity-50">Studio Monitor</h1>
+                <div class="flex items-center gap-2">
+                    <button class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-lg text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-download text-xs"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-lg text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-share-nodes text-xs"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-lg text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-cloud-arrow-up text-xs"></i></button>
                 </div>
-
-                <!-- Input Hub: Pill Shaped (The Fix) -->
-                <div class="shrink-0 p-4 md:p-10 bg-gradient-to-t from-slateBg via-slateBg to-transparent z-40">
-                    <div class="max-w-3xl mx-auto px-2">
-                        <div class="pill-input-container bg-white border border-slate-200 p-1.5 flex items-end shadow-2xl focus-within:border-primary/50 transition-all">
-                            <button class="w-11 h-11 flex items-center justify-center text-slate-400 hover:text-primary transition-all shrink-0 mb-0.5"><i class="fa-solid fa-circle-plus text-lg"></i></button>
-                            <textarea id="userInput" rows="1" placeholder="Describe vision or paste link..." class="flex-1 bg-transparent border-none outline-none text-[15px] p-3 resize-none overflow-y-auto max-h-[120px] font-medium text-slate-800 leading-relaxed" oninput="autoGrow(this)"></textarea>
-                            <button id="sendBtn" onclick="handleSend()" class="w-11 h-11 bg-slate-900 text-white rounded-full flex items-center justify-center m-1 shrink-0 shadow-lg active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-                                <i id="sendIcon" class="fa-solid fa-arrow-up text-lg"></i>
-                            </button>
-                        </div>
-                        <p class="text-[8px] text-center mt-3 text-slate-400 font-bold uppercase tracking-[0.4em]">Autonomous Architecture Engine 10.1</p>
-                    </div>
-                </div>
-            </main>
+            </div>
         </div>
+
+        <!-- Chat History -->
+        <div id="workspace" class="chat-area">
+            <div id="chatHistory" class="max-w-2xl mx-auto space-y-10">
+                <div class="flex gap-6 items-start animate-in fade-in">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20">⚡</div>
+                    <p class="text-sm leading-relaxed font-medium text-slate-600">Lead Producer online. Production environment ready. Speak your vision.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Pill Input Hub -->
+        <footer class="footer-input-hub">
+            <div class="pill-container">
+                <button class="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-blue-600"><i class="fa-solid fa-circle-plus text-xl"></i></button>
+                <textarea id="userInput" rows="1" placeholder="Describe vision or paste link..." oninput="autoGrow(this)"></textarea>
+                <button id="sendBtn" onclick="handleSend()" class="w-11 h-11 bg-slate-900 text-white rounded-full flex items-center justify-center m-1 shrink-0 shadow-lg active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                    <i id="sendIcon" class="fa-solid fa-arrow-up text-lg"></i>
+                </button>
+            </div>
+            <p class="text-[8px] text-center mt-3 text-zinc-400 font-bold uppercase tracking-[0.4em]">CineMagic Intelligence Core</p>
+        </footer>
+
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('hidden');
+        }
+
+        function autoGrow(el) {
+            el.style.height = "auto";
+            el.style.height = (el.scrollHeight) + "px";
+        }
+
+        async function handleSend() {
+            const inputEl = document.getElementById('userInput');
+            const input = inputEl.value.trim();
+            if(!input) return;
+
+            const sendBtn = document.getElementById('sendBtn');
+            const sendIcon = document.getElementById('sendIcon');
+            const history = document.getElementById('chatHistory');
+            const workspace = document.getElementById('workspace');
+
+            // 1. Disable Button & Show Spinner
+            sendBtn.disabled = true;
+            sendIcon.className = "fa-solid fa-circle-notch animate-spin";
+
+            // 2. User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex justify-end mb-8 animate-in fade-in";
+            userMsg.innerHTML = `<div class="bg-white border border-slate-200 text-slate-800 px-6 py-4 rounded-[2rem] text-sm max-w-[85%] shadow-xl font-medium text-left whitespace-pre-wrap">${input}</div>`;
+            history.appendChild(userMsg);
+            workspace.scrollTop = workspace.scrollHeight;
+
+            // Reset Input height
+            inputEl.value = '';
+            inputEl.style.height = 'auto';
+
+            // 3. Thinking Indicator
+            const thinking = document.createElement('div');
+            thinking.className = "flex gap-6 items-start animate-in fade-in mb-8";
+            thinking.innerHTML = `<div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm">⚡</div><p class="text-sm font-bold text-slate-400 uppercase tracking-widest animate-pulse mt-2 italic">Thinking...</p>`;
+            history.appendChild(thinking);
+            workspace.scrollTop = workspace.scrollHeight;
+
+            try {
+                // Fetch from Railway Backend
+                const response = await fetch('https://cinemagic-engine-production.up.railway.app/api/chat', { 
+                    method: 'POST', 
+                    body: new URLSearchParams({'message': input}) 
+                });
+                const data = await response.json();
+                
+                if(data.model_used) document.getElementById('modelHud').innerText = data.model_used;
+
+                // 4. Update AI Response
+                thinking.innerHTML = `
+                    <div class="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 text-xs italic shrink-0 border border-blue-500/20 shadow-sm">⚡</div>
+                    <div class="space-y-4 flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-blue-600 italic">CineMagic Intel</p>
+                        <p class="text-sm opacity-90 leading-relaxed font-medium text-slate-800 text-left">${data.reply.replace(/\n/g, '<br>')}</p>
+                    </div>`;
+            } catch (e) {
+                thinking.innerHTML = `<p class="text-xs text-red-500 p-2 italic">Connection Offline.</p>`;
+            } finally {
+                sendBtn.disabled = false;
+                sendIcon.className = "fa-solid fa-arrow-up";
+                workspace.scrollTop = workspace.scrollHeight;
+            }
+        }
+
+        function startVideo() {
+            const v = document.getElementById('videoPlayer');
+            v.src = "https://www.w3schools.com/html/mov_bbb.mp4";
+            document.getElementById('poster').classList.add('hidden');
+            document.getElementById('playBtn').classList.add('hidden');
+            v.classList.remove('hidden');
+            v.play();
+        }
+    </script>
 </body>
 </html>
